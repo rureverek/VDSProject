@@ -8,4 +8,9 @@
 #include <gtest/gtest.h>
 #include "../Manager.h"
 
+TEST(HelloTest, BasicAssertions) {
+    // Expect equality.
+    EXPECT_EQ(5*7, 42);
+}
+
 #endif
