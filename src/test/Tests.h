@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 #include "../Manager.h"
 
-TEST(InitTableEntries, ManagerInterface){
+TEST(ManagerInterface, InitTableEntries){
 
     ClassProject::ManagerInterface manager;
 
@@ -18,7 +18,7 @@ TEST(InitTableEntries, ManagerInterface){
     EXPECT_EQ(manager.Table[1].id, 1);
 }
 
-TEST(InitTableSize, ManagerInterface){
+TEST(ManagerInterface, InitTableSize){
 
     ClassProject::ManagerInterface manager;
 
