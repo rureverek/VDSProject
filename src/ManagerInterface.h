@@ -13,7 +13,7 @@ namespace ClassProject {
 
     typedef size_t BDD_ID;
 
-    typedef struct BDD_ID_Entry {
+    struct BDD_ID_Entry {
         std::string label;
         ClassProject::BDD_ID id;
         int high;
