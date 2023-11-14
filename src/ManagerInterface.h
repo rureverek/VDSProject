@@ -20,11 +20,10 @@ namespace ClassProject {
         int low;
         int TopVar;
     };
-    std::vector<ClassProject::BDD_ID_Table> Table;
 
     class ManagerInterface {
     public:
-
+        std::vector<ClassProject::BDD_ID_Table> Table;
         ManagerInterface(){
             ClassProject::BDD_ID_Table entry;
             entry.label = "False";
@@ -43,7 +42,7 @@ namespace ClassProject {
         };
 
         
-
+/*
         virtual BDD_ID createVar(const std::string &label) = 0;
 
         virtual const BDD_ID &True() = 0;
@@ -89,6 +88,7 @@ namespace ClassProject {
         virtual size_t uniqueTableSize() = 0;
 
         virtual void visualizeBDD(std::string filepath, BDD_ID &root) = 0;
+        */
     };
 }
 
