@@ -1,5 +1,4 @@
 #include "Manager.h"
-#include "ManagerInterface.h"
 
 
 namespace ClassProject {
