@@ -7,13 +7,43 @@
 
 #include <string>
 #include <set>
+#include <vector>
 
 namespace ClassProject {
 
     typedef size_t BDD_ID;
 
+    typedef struct BDD_ID_Table {
+        std::string label;
+        ClassProject::BDD_ID id;
+        int high;
+        int low;
+        int TopVar;
+    };
+    std::vector<ClassProject::BDD_ID_Table> Table;
+
     class ManagerInterface {
     public:
+
+        ManagerInterface(){
+            ClassProject::BDD_ID_Table entry;
+            entry.label = "False";
+            entry.id = 0;
+            entry.high = 0;
+            entry.low = 0;
+            entry.TopVar = 0;
+            Table.push_back(entry);
+
+            entry.label = "True";
+            entry.id = 0;
+            entry.high = 1;
+            entry.low = 1;
+            entry.TopVar = 0;
+            Table.push_back(entry);
+        };
+
+        
+
         virtual BDD_ID createVar(const std::string &label) = 0;
 
         virtual const BDD_ID &True() = 0;
