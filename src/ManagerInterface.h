@@ -13,7 +13,7 @@ namespace ClassProject {
 
     typedef size_t BDD_ID;
 
-    typedef struct BDD_ID_Table {
+    typedef struct BDD_ID_Entry {
         std::string label;
         ClassProject::BDD_ID id;
         int high;
@@ -23,24 +23,16 @@ namespace ClassProject {
 
     class ManagerInterface {
     public:
-        std::vector<ClassProject::BDD_ID_Table> Table;
+
+        std::vector<ClassProject::BDD_ID_Entry> Table;
+
         ManagerInterface(){
-            ClassProject::BDD_ID_Table entry;
-            entry.label = "False";
-            entry.id = 0;
-            entry.high = 0;
-            entry.low = 0;
-            entry.TopVar = 0;
+            ClassProject::BDD_ID_Entry entry = {"False", 0, 0, 0, 0};
             Table.push_back(entry);
 
-            entry.label = "True";
-            entry.id = 0;
-            entry.high = 1;
-            entry.low = 1;
-            entry.TopVar = 0;
+            entry = {"True", 1, 1, 1, 1};
             Table.push_back(entry);
         };
-
         
 /*
         virtual BDD_ID createVar(const std::string &label) = 0;
