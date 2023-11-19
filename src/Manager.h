@@ -9,19 +9,20 @@
 
 namespace ClassProject {
 
-    struct BDD_ID_Entry {
-        std::string label;
-        BDD_ID id;
-        int high;
-        int low;
-        BDD_ID TopVar;
-    };
-
-    std::vector<BDD_ID_Entry> Table;
-
     class Manager : public ManagerInterface{
         public:
         Manager();
+
+        struct BDD_ID_Entry {
+            std::string label;
+            BDD_ID id;
+            int high;
+            int low;
+            BDD_ID TopVar;
+        };
+
+        std::vector<BDD_ID_Entry> Table;
+
         BDD_ID createVar(const std::string &label) override;
         const BDD_ID &True() override;
         const BDD_ID &False() override;

@@ -19,6 +19,13 @@ namespace ClassProject {
         Table.push_back(entry);
     }
 
+    /**
+     * @brief createVar
+     * 
+     * Creates a new variable with the given ID.
+     * @param label String of the label of the variable.
+     * @return returns the ID of the created variable.
+     */
     BDD_ID Manager::createVar(const std::string &label) {
 
         BDD_ID ID = Table.size();
@@ -43,8 +50,24 @@ namespace ClassProject {
         return ret;
     }
 
-    bool isConstant(BDD_ID f) {
+    /**
+     * @brief isConstant
+     * 
+     * Returns true if the node is a leaf node.
+     * @param f ID of the node.
+     * @return returns true if the node is a leaf node.
+     */
+    bool Manager::isConstant(BDD_ID f) {
+        auto pred = [f](const BDD_ID_Entry & item) {
+            return item.id == f;
+        };
 
+        if ( std::find_if(std::begin(Table), std::end(Table), pred) != std::end(Table) && Table[f].low == Table[f].high) {
+            return true;
+        }
+        else {
+            return false;
+        }
     };
 
     bool Manager::isVariable( BDD_ID x) {
