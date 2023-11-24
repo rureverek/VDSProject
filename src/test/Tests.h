@@ -28,15 +28,14 @@ TEST(Manager, InitTableSize){
 }
 
 
-// TEST(Manager, createVar){
+TEST(Manager, createVar){
 
-//     ClassProject::Manager manager;
-//     ClassProject::BDD_ID ID = manager.createVar("a");
-
-//     EXPECT_EQ(manager.Table[2].id, 2);
-//     EXPECT_EQ(manager.Table[2].id, ID);
-//     EXPECT_EQ(manager.Table[2].label, "a");
-// }
+    ClassProject::Manager manager;
+    ClassProject::BDD_ID ID = manager.createVar("a");
+    EXPECT_EQ(ID, 2);
+    // EXPECT_EQ(manager.Table[2].id, ID);
+    // EXPECT_EQ(manager.Table[2].label, "a");
+}
 
 TEST(Manager, TrueID){
 

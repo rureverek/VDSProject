@@ -44,7 +44,7 @@ namespace ClassProject {
 
         std::unordered_map<Unique_Table_Key, Unique_Table_Entry, KeyHash> Table;
 
-//        BDD_ID createVar(const std::string &label) override;
+        BDD_ID createVar(const std::string &label) override;
         const BDD_ID &True() override;
         const BDD_ID &False() override;
 //        bool isConstant(BDD_ID f) override;

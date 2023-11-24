@@ -25,20 +25,23 @@ namespace ClassProject {
      * @param label String of the label of the variable.
      * @return returns the ID of the created variable.
      */
-    // BDD_ID Manager::createVar(const std::string &label) {
 
-    //     //BDD_ID ID = Table.size();
-    //     BDD_ID_Entry entry_Var;
-    //     entry_Var.label = label;
-    //     entry_Var.id = ID;
-    //     entry_Var.high = 1;
-    //     entry_Var.low = 0;
-    //     entry_Var.TopVar = ID;
+    BDD_ID Manager::createVar(const std::string &label) {
 
-    //     Table.insert(entry_Var)
-    //     push(entry_Var);
-    //     return ID;
-    // };
+        Unique_Table_Key key_Var;
+        BDD_ID ID = Table.size();
+        key_Var.high = 1;
+        key_Var.low = 0;
+        key_Var.TopVar = ID;
+
+        Unique_Table_Entry entry_Var;
+        
+        entry_Var.label = label;
+        entry_Var.id = ID;
+
+        Table.emplace(key_Var, entry_Var);
+        return ID;
+    };
 
     const BDD_ID &Manager::False() {
         static const BDD_ID ret = 0;
