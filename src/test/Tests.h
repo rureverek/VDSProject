@@ -53,13 +53,12 @@ TEST(Manager, FalseID){
     EXPECT_EQ(id, 0);
 }
 
-//test isConstant
-// TEST(Manager,isConstant){
-//     ClassProject::Manager manager;
-
-//     EXPECT_TRUE(manager.isConstant(0));
-//     EXPECT_TRUE(manager.isConstant(1));
-// }
+// test isConstant
+TEST(Manager, isConstant){
+    ClassProject::Manager manager;
+    EXPECT_TRUE(manager.isConstant(0));
+    EXPECT_TRUE(manager.isConstant(1));
+}
 
 
 // //test isVariable function

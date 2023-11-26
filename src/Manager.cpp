@@ -60,18 +60,18 @@ namespace ClassProject {
      * @param f ID of the node.
      * @return returns true if the node is a leaf node.
      */
-//     bool Manager::isConstant(BDD_ID f) {
-//         auto pred = [f](const BDD_ID_Entry & item) {
-//             return item.id == f;
-//         };
-
-//         if ( std::find_if(std::begin(Table), std::end(Table), pred) != std::end(Table) && Table[f].low == Table[f].high) {
-//             return true;
-//         }
-//         else {
-//             return false;
-//         }
-//     };
+    bool Manager::isConstant(BDD_ID f) {
+        for (auto & it : Table) {
+           if (it.second.id == f) {
+               if (it.first.low == it.first.high) {
+                   return true;
+               } else {
+                   return false;
+               }
+           }
+       }
+       return false;
+    };
 
 //     bool Manager::isVariable( BDD_ID x) {
 //         if (Table[x].label.size() == 1 && std::all_of(Table[x].label.begin(), Table[x].label.end(), ::isalpha)) {
