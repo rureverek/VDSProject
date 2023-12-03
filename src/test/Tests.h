@@ -153,35 +153,18 @@ TEST_F(TestManager, getTopVarName)
 {
     manager->Table[{2,0,1}] = {"a", 2};
     manager->Table[{3,0,1}] = {"b", 3};
+    manager->Table[{4,0,1}] = {"c", 4};
+    manager->Table[{5,0,1}] = {"d", 5};
     manager->Table[{2,1,3}] = {"a+b", 6};
-    manager->Table[{3,0,5}] = {"b*c*d", 7};
+    manager->Table[{4,0,5}] = {"c*d", 7};
 
     EXPECT_EQ(manager->getTopVarName(2), "a");
     EXPECT_EQ(manager->getTopVarName(3), "b");
-    EXPECT_EQ(manager->getTopVarName(6), "a+b");
-    EXPECT_EQ(manager->getTopVarName(7), "b*c*d");
+    EXPECT_EQ(manager->getTopVarName(6), "a");
+    EXPECT_EQ(manager->getTopVarName(7), "c");
 
 }
 
-/**
-* @brief getTopVarName Test
-*
-*/
 
-TEST_F(TestManager, and2)
-{
-   // ClassProject::BDD_ID input =  manager->and2("a","b");
-
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{2,1,3}] = {"a+b", 6};
-    manager->Table[{3,0,5}] = {"b*c*d", 7};
-
-    EXPECT_EQ( manager->and2("a+b","b"), 5);
-//EXPECT_EQ(manager->getTopVarName(3), "b");
-//EXPECT_EQ(manager->getTopVarName(6), "a+b");
-//EXPECT_EQ(manager->getTopVarName(7), "b*c*d");
-
-}
 
 #endif
