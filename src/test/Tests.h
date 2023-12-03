@@ -165,6 +165,4 @@ TEST_F(TestManager, getTopVarName)
 
 }
 
-
-
 #endif
