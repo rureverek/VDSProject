@@ -1,6 +1,9 @@
 #include "Manager.h"
 #include <algorithm>
 
+#include <Graphviz/gvc.h>
+#include <Graphviz/cgraph.h>
+
 /**
  * @brief ClassProject Class.
  *
@@ -297,7 +300,11 @@ namespace ClassProject
         return ""; //It should never reach here...
     }
 
-
+    void Manager::visualizeBDD(std::string filepath, BDD_ID &root) {
+        GVC_t *gvc = gvContext();
+        printf("HELLO Okay");
+        FILE *fp;
+    }
 
 }
         
