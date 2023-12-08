@@ -29,6 +29,6 @@ int main(int argc, char* argv[])
     for(auto [key, value] : manager.Table){
         std::cout<<value.id<<":"<<key.high<<","<<key.low<<","<<key.TopVar<<std::endl;
     }
-
-    
+    ClassProject::BDD_ID id;
+    manager.visualizeBDD("Test", id);
 }

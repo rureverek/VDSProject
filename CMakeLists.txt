@@ -51,4 +51,4 @@ link_directories(${CMAKE_SOURCE_DIR}/src/verify/)
 
 add_subdirectory(src)
 add_executable(VDSProject src/main.cpp)
-target_link_libraries(VDSProject cgraph gvc Manager)
+target_link_libraries(VDSProject cgraph gvc glib-2 xdot Manager)

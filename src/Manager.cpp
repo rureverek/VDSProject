@@ -1,8 +1,9 @@
 #include "Manager.h"
 #include <algorithm>
-
+#include <iostream>
 #include <Graphviz/gvc.h>
 #include <Graphviz/cgraph.h>
+#include <string>
 
 /**
  * @brief ClassProject Class.
@@ -301,9 +302,54 @@ namespace ClassProject
     }
 
     void Manager::visualizeBDD(std::string filepath, BDD_ID &root) {
+
+        std::cout<<"VisualizeBDD"<<std::endl;
+        std::string dot_file = "../test.gv";
+        std::string pdf_file = "../test.pdf";
+
+        /* Create Gvc object */
         GVC_t *gvc = gvContext();
-        printf("HELLO Okay");
-        FILE *fp;
+
+        // Create a simple digraph
+        Agraph_t *g = agopen("g", Agdirected, 0);
+        if(!g)std::cout<<"ERROR: g"<<std::endl;
+
+        /* Create Node */
+        Agnode_t *n = agnode(g, "root", 1);
+        if(!n)std::cout<<"ERROR: g"<<std::endl;
+
+        Agnode_t *m = agnode(g, "low", 1);
+        if(!m)std::cout<<"ERROR: g"<<std::endl;
+
+        Agnode_t *x = agnode(g, "high", 1);
+        if(!x)std::cout<<"ERROR: g"<<std::endl;
+
+        /* Create Edge */
+        Agedge_t *e = agedge(g, n, m, 0, 1);
+        Agedge_t *f = agedge(g, n, x, 0, 1);
+
+        // Set an attribute - in this case one that affects the visible rendering
+        int ret = agsafeset(n, "color", "red", "");
+        if (ret != 0)std::cout<<"ERROR: agsafeset"<<std::endl;
+
+        // Use the directed graph layout engine
+        ret = gvLayout(gvc, g, "dot");
+        if (ret != 0)std::cout<<"ERROR: gvLayout"<<std::endl;
+
+        // Output in .dot and .pdf format
+        ret = gvRenderFilename(gvc, g, "dot", dot_file.c_str());
+        ret = gvRenderFilename(gvc, g, "pdf", pdf_file.c_str());
+        if (ret != 0)std::cout<<"ERROR: gvRenderFilename"<<std::endl;
+
+        gvFreeLayout(gvc, g);
+
+        // Free graph structures
+        agclose(g);
+
+        // close output file, free context, and return number of errors
+        ret = gvFreeContext(gvc);
+        if(ret != 0)std::cout<<"ERROR";
+
     }
 
 }
