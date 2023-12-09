@@ -2,16 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 project(VDSProject CXX C)
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fPIC -std=c++17 ${LLVM_CXX_FLAGS} ")
 
-#if (UNIX)
-#
-#    INCLUDE(FindPkgConfig)
-#    PKG_SEARCH_MODULE(gvc REQUIRED libgvc libcgraph libcdt)
-#    LINK_DIRECTORIES(${gvc_LIBRARY_DIRS})
-#    INCLUDE_DIRECTORIES(${gvc_INCLUDE_DIRS})
-#    TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${gvc_LIBRARIES})
-#
-#endif (UNIX)
-
 
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in ${CMAKE_SOURCE_DIR}/gtest/googletest-download/CMakeLists.txt)
@@ -66,6 +56,13 @@ add_executable(VDSProject src/main.cpp)
 if (WIN32)
     target_link_libraries(VDSProject cgraph gvc glib-2 xdot Manager)
 endif (WIN32)
+
 if (UNIX)
-    target_link_libraries(VDSProject libgvc libcgraph Manager)
+
+    INCLUDE(FindPkgConfig)
+    PKG_SEARCH_MODULE(gvc REQUIRED libgvc libcgraph libcdt)
+    LINK_DIRECTORIES(${gvc_LIBRARY_DIRS})
+    INCLUDE_DIRECTORIES(${gvc_INCLUDE_DIRS})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${gvc_LIBRARIES})
+
 endif (UNIX)
