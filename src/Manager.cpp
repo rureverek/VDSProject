@@ -1,8 +1,8 @@
 #include "Manager.h"
 #include <algorithm>
 #include <iostream>
-#include <Graphviz/gvc.h>
-#include <Graphviz/cgraph.h>
+#include <graphviz/gvc.h>
+#include <graphviz/cgraph.h>
 #include <string>
 #include <set>
 #include <vector>
