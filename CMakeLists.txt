@@ -33,6 +33,7 @@ endif()
 #Include dirs
 include_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/include)
 link_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/bin)
+link_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/lib)
 
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
