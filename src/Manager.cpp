@@ -4,6 +4,7 @@
 #include <Graphviz/gvc.h>
 #include <Graphviz/cgraph.h>
 #include <string>
+#include <set>
 
 /**
  * @brief ClassProject Class.
@@ -306,30 +307,60 @@ namespace ClassProject
         std::cout<<"VisualizeBDD"<<std::endl;
         std::string dot_file = "../test.gv";
         std::string pdf_file = "../test.pdf";
-
+        std::set<BDD_ID> set;
+        std::set<BDD_ID> set_topVar;
+        //void findNodes(&root, &set)
+        //void findVars(&root, &set_topVar)
+        //std::vector <Agnode_t*> nodes;
         /* Create Gvc object */
         GVC_t *gvc = gvContext();
 
         // Create a simple digraph
         Agraph_t *g = agopen("g", Agdirected, 0);
         if(!g)std::cout<<"ERROR: g"<<std::endl;
+        Agnode_t *r;
+        /* Create Root Node */
+//        Agnode_t *r = agnode(g, "root", 1);
+//        if(!root)std::cout<<"ERROR ROOT"<<std::endl;
 
-        /* Create Node */
-        Agnode_t *n = agnode(g, "root", 1);
-        if(!n)std::cout<<"ERROR: g"<<std::endl;
+        BDD_ID IDS[6] = {0,1,5,7,8,9};
 
-        Agnode_t *m = agnode(g, "low", 1);
-        if(!m)std::cout<<"ERROR: g"<<std::endl;
+        for(auto i : IDS)
+        {
+            Unique_Table_Entry entry;
+            for(auto &j : Table)
+            {
+                if(j.second.id == i)
+                {
+                    entry = j.second;
+                }
+            }
+            if(isConstant(i))
+            {
+                r = agnode(g, (char *)entry.label.c_str() , 1);
+            }
+            else
+            {
+//                /* For each root node create 2 nodes: low and high */
+//                Agnode_t *h = agnode(g, "low", 1);
+//                if(!h)std::cout<<"ERROR LOW"<<std::endl;
+//
+//                Agnode_t *l = agnode(g, "high", 1);
+//                if(!l)std::cout<<"ERROR HIGH"<<std::endl;
+//
+//                /* Create Edges: root-low, root-high */
+//                Agedge_t *e = agedge(g, r, l, 0, 1);
+//                Agedge_t *f = agedge(g, r, h, 0, 1);
+//
+//                //Set next node to be root.
+//                //Assign new low and high nodes.
+            }
 
-        Agnode_t *x = agnode(g, "high", 1);
-        if(!x)std::cout<<"ERROR: g"<<std::endl;
+        }
 
-        /* Create Edge */
-        Agedge_t *e = agedge(g, n, m, 0, 1);
-        Agedge_t *f = agedge(g, n, x, 0, 1);
 
         // Set an attribute - in this case one that affects the visible rendering
-        int ret = agsafeset(n, "color", "red", "");
+        int ret = agsafeset(r, "color", "red", "");
         if (ret != 0)std::cout<<"ERROR: agsafeset"<<std::endl;
 
         // Use the directed graph layout engine
