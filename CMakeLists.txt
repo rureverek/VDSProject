@@ -32,10 +32,10 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 #Include dirs
+if(WIN32)
 include_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/include)
 link_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/bin)
-link_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/lib)
-
+endif(WIN32)
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
@@ -64,6 +64,6 @@ if (UNIX)
     LINK_DIRECTORIES(${gvc_LIBRARY_DIRS})
     INCLUDE_DIRECTORIES(${gvc_INCLUDE_DIRS})
     message("Libs: ${gvc_LIBRARIES}")
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${gvc_LIBRARIES} Manager)
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME} gvc cgraph Manager)
 
 endif (UNIX)
