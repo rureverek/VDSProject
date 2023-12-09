@@ -5,6 +5,7 @@
 #include <Graphviz/cgraph.h>
 #include <string>
 #include <set>
+#include <vector>
 
 /**
  * @brief ClassProject Class.
@@ -307,11 +308,11 @@ namespace ClassProject
         std::cout<<"VisualizeBDD"<<std::endl;
         std::string dot_file = "../test.gv";
         std::string pdf_file = "../test.pdf";
-        std::set<BDD_ID> set;
-        std::set<BDD_ID> set_topVar;
-        //void findNodes(&root, &set)
-        //void findVars(&root, &set_topVar)
-        //std::vector <Agnode_t*> nodes;
+        //std::set<BDD_ID> set; //TODO: uncomment
+
+        /* Find Nodes */
+        //virtual void findNodes(&root, &set) //TODO: uncomment
+
         /* Create Gvc object */
         GVC_t *gvc = gvContext();
 
@@ -319,17 +320,15 @@ namespace ClassProject
         Agraph_t *g = agopen("g", Agdirected, 0);
         if(!g)std::cout<<"ERROR: g"<<std::endl;
         Agnode_t *r;
-        Agnode_t *h;
-        Agnode_t *l;
         Agedge_t *e;
         Agedge_t *f;
-        /* Create Root Node */
-//        Agnode_t *r = agnode(g, "root", 1);
-//        if(!root)std::cout<<"ERROR ROOT"<<std::endl;
 
-        BDD_ID IDS[6] = {0,1,5,7,8,9};
-        Agnode_t* nodes[6];
+        BDD_ID IDS[6] = {0,1,5,7,8,9}; //TODO: comment
 
+        /* Vector type to assign size dynamically depending on number of nodes in Table */
+        std::vector<Agnode_t*> nodes (Table.size());
+
+        //for(auto i : set) - assuming set is sorted and ascending //TODO: uncomment
         for(auto i : IDS)
         {
             Unique_Table_Key key;
@@ -344,22 +343,24 @@ namespace ClassProject
 
             if(isConstant(i))
             {
+                /* Create Constant Node */
                 r = agnode(g, (char *)std::to_string(i).c_str() , 1);
                 nodes[i] = r;
             }
             else
             {
+                /* Create Non-constant Node */
                 r = agnode(g, (char *)getTopVarName(i).c_str() , 1);
                 nodes[i] = r;
 
-                /* Create Edges: root-low, root-high */
+                /* Create low and high edges */
                 e = agedge(g, r, nodes[key.low], 0, 1);
                 f = agedge(g, r, nodes[key.high], 0, 1);
             }
         }
 
 
-        // Set an attribute - in this case one that affects the visible rendering
+        /* Set Root node to red color */
         int ret = agsafeset(r, "color", "red", "");
         if (ret != 0)std::cout<<"ERROR: agsafeset"<<std::endl;
 
