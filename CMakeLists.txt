@@ -36,6 +36,14 @@ if(WIN32)
 include_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/include)
 link_directories(${CMAKE_SOURCE_DIR}/cmake/Graphviz/bin)
 endif(WIN32)
+
+if(UNIX)
+    INCLUDE(FindPkgConfig)
+    PKG_SEARCH_MODULE(gvc REQUIRED libgvc libcgraph libcdt)
+    LINK_DIRECTORIES(${gvc_LIBRARY_DIRS})
+    INCLUDE_DIRECTORIES(${gvc_INCLUDE_DIRS})
+endif(UNIX)
+
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
@@ -53,17 +61,5 @@ link_directories(${CMAKE_SOURCE_DIR}/src/verify/)
 
 add_subdirectory(src)
 add_executable(VDSProject src/main.cpp)
-if (WIN32)
-    target_link_libraries(VDSProject gvc cgraph Manager)
-endif (WIN32)
 
-if (UNIX)
-
-    INCLUDE(FindPkgConfig)
-    PKG_SEARCH_MODULE(gvc REQUIRED libgvc libcgraph libcdt)
-    LINK_DIRECTORIES(${gvc_LIBRARY_DIRS})
-    INCLUDE_DIRECTORIES(${gvc_INCLUDE_DIRS})
-    message("Libs: ${gvc_LIBRARIES}")
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME} gvc cgraph Manager)
-
-endif (UNIX)
+target_link_libraries(VDSProject gvc cgraph Manager)
