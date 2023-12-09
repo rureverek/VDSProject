@@ -319,43 +319,43 @@ namespace ClassProject
         Agraph_t *g = agopen("g", Agdirected, 0);
         if(!g)std::cout<<"ERROR: g"<<std::endl;
         Agnode_t *r;
+        Agnode_t *h;
+        Agnode_t *l;
+        Agedge_t *e;
+        Agedge_t *f;
         /* Create Root Node */
 //        Agnode_t *r = agnode(g, "root", 1);
 //        if(!root)std::cout<<"ERROR ROOT"<<std::endl;
 
         BDD_ID IDS[6] = {0,1,5,7,8,9};
+        Agnode_t* nodes[6];
 
         for(auto i : IDS)
         {
-            Unique_Table_Entry entry;
+            Unique_Table_Key key;
+
             for(auto &j : Table)
             {
                 if(j.second.id == i)
                 {
-                    entry = j.second;
+                    key = j.first;
                 }
             }
+
             if(isConstant(i))
             {
-                r = agnode(g, (char *)entry.label.c_str() , 1);
+                r = agnode(g, (char *)std::to_string(i).c_str() , 1);
+                nodes[i] = r;
             }
             else
             {
-//                /* For each root node create 2 nodes: low and high */
-//                Agnode_t *h = agnode(g, "low", 1);
-//                if(!h)std::cout<<"ERROR LOW"<<std::endl;
-//
-//                Agnode_t *l = agnode(g, "high", 1);
-//                if(!l)std::cout<<"ERROR HIGH"<<std::endl;
-//
-//                /* Create Edges: root-low, root-high */
-//                Agedge_t *e = agedge(g, r, l, 0, 1);
-//                Agedge_t *f = agedge(g, r, h, 0, 1);
-//
-//                //Set next node to be root.
-//                //Assign new low and high nodes.
-            }
+                r = agnode(g, (char *)getTopVarName(i).c_str() , 1);
+                nodes[i] = r;
 
+                /* Create Edges: root-low, root-high */
+                e = agedge(g, r, nodes[key.low], 0, 1);
+                f = agedge(g, r, nodes[key.high], 0, 1);
+            }
         }
 
 
