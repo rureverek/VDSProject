@@ -75,11 +75,9 @@ namespace ClassProject
         BDD_ID coFactorTrue(BDD_ID f) override;
         BDD_ID coFactorFalse(BDD_ID f) override;
         BDD_ID ite(BDD_ID i, BDD_ID t, BDD_ID e) override;
-        BDD_ID and2(std::string &a, std::string &b) override;
         void findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) override;
         void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) override;
         size_t uniqueTableSize() override;
-
         BDD_ID neg(BDD_ID a) override;
         BDD_ID and2(BDD_ID a, BDD_ID b) override;
         BDD_ID or2(BDD_ID a, BDD_ID b) override;
@@ -87,7 +85,6 @@ namespace ClassProject
         BDD_ID nand2(BDD_ID a, BDD_ID b) override;
         BDD_ID nor2(BDD_ID a, BDD_ID b) override;
         BDD_ID xnor2(BDD_ID a, BDD_ID b) override;
-
         void visualizeBDD(std::string filepath, BDD_ID &root) override;
 
     };
