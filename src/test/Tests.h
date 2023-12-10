@@ -196,7 +196,6 @@ TEST_F(InitManager, ite) {
     ClassProject::BDD_ID d = manager->createVar("d");
 
     EXPECT_EQ(manager->Table.size(),6);
-
     EXPECT_EQ(manager->computed_table.size(), 0);
 
     /* a+b */
@@ -257,21 +256,21 @@ TEST_F(InitManager, CoFactorTrue) {
 
 TEST_F(InitManager, CoFactorFalse) {
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
-    manager->Table[{2,1,3}] = {"a+b", 6}; //TODO: replace with or2 when possible
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
+    ClassProject::BDD_ID ab = manager->or2(a,b);
 
-    EXPECT_EQ(manager->coFactorFalse(0,4), 0); //Terminal Case - f = 0
-    EXPECT_EQ(manager->coFactorFalse(1,3), 1); //Terminal Case - f = 1
-    EXPECT_EQ(manager->coFactorFalse(0,0), 0); //Terminal Case - x = 0
-    EXPECT_EQ(manager->coFactorFalse(5,1), 5); //Terminal Case - x = 1
+    EXPECT_EQ(manager->coFactorFalse(manager->False(),d), manager->False()); //Terminal Case - f = 0
+    EXPECT_EQ(manager->coFactorFalse(manager->True(),c), manager->True()); //Terminal Case - f = 1
+    EXPECT_EQ(manager->coFactorFalse(manager->False(),manager->False()), manager->False()); //Terminal Case - x = 0
+    EXPECT_EQ(manager->coFactorFalse(d,manager->True()), d); //Terminal Case - x = 1
 
-    EXPECT_EQ(manager->coFactorFalse(6,2), 1); //Case: f.top == x ret f.low
+    EXPECT_EQ(manager->coFactorFalse(ab,a), b); //Case: f.top == x ret f.low
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorFalse(6,5), manager->ite(2, manager->coFactorFalse(3, 5), manager->coFactorFalse(1,5)));
+    EXPECT_EQ(manager->coFactorFalse(ab,d), manager->ite(a, manager->coFactorFalse(b, d), manager->coFactorFalse(manager->True(),d)));
 
 }
 
@@ -314,9 +313,9 @@ TEST_F(TestManager, findNodes){
 TEST_F(TestManager, neg)
 {
 
-    EXPECT_EQ(manager->neg(a), manager->ite(a, 0, 1));
-    EXPECT_EQ(manager->neg(ab), manager->ite(ab, 0, 1));
-    EXPECT_EQ(manager->neg(cd), manager->ite(cd, 0 ,1));
+    EXPECT_EQ(manager->neg(a), manager->ite(a, manager->False(), manager->True()));
+    EXPECT_EQ(manager->neg(ab), manager->ite(ab, manager->False(), manager->True()));
+    EXPECT_EQ(manager->neg(cd), manager->ite(cd, manager->False() ,manager->True()));
 }
 
 /**
@@ -327,10 +326,10 @@ TEST_F(TestManager, neg)
 TEST_F(TestManager, and2)
 {
 
-    EXPECT_EQ(manager->and2(2, 3), manager->ite(2, 3, 0));
-    EXPECT_EQ(manager->and2(4, 5), manager->ite(4, 5, 0));
-    EXPECT_EQ(manager->and2(2, 4), manager->ite(2, 4, 0));
-    EXPECT_EQ(manager->and2(6, 7), manager->ite(6, 7 ,0));
+    EXPECT_EQ(manager->and2(a, b), manager->ite(a, b, manager->False()));
+    EXPECT_EQ(manager->and2(c, d), manager->ite(c, d, manager->False()));
+    EXPECT_EQ(manager->and2(a, c), manager->ite(a, c, manager->False()));
+    EXPECT_EQ(manager->and2(cd, f), manager->ite(cd, f ,manager->False()));
 }
 
 /**
@@ -341,10 +340,10 @@ TEST_F(TestManager, and2)
 TEST_F(TestManager, or2)
 {
 
-    EXPECT_EQ(manager->or2(2, 3), manager->ite(2, 1, 3));
-    EXPECT_EQ(manager->or2(4, 5), manager->ite(4, 1, 5));
-    EXPECT_EQ(manager->or2(6, 7), manager->ite(6, 1 ,7));
-    EXPECT_EQ(manager->or2(6, 7), manager->ite(6, 1 ,7));
+    EXPECT_EQ(manager->or2(a, b), manager->ite(a, manager->True(), b));
+    EXPECT_EQ(manager->or2(c, d), manager->ite(c, manager->True(), d));
+    EXPECT_EQ(manager->or2(cd, f), manager->ite(cd, manager->True() ,f));
+    EXPECT_EQ(manager->or2(cd, f), manager->ite(cd, manager->True() ,f));
 }
 
 /**
@@ -355,9 +354,9 @@ TEST_F(TestManager, or2)
 TEST_F(TestManager, xor2) //ite(a, ~b, b)
 {
 
-    EXPECT_EQ(manager->xor2(2, 3), manager->ite(2, manager->neg(3), 3));
-    EXPECT_EQ(manager->xor2(4, 5), manager->ite(4, manager->neg(5), 5));
-    EXPECT_EQ(manager->xor2(6, 7), manager->ite(6, manager->neg(7) ,7));
+    EXPECT_EQ(manager->xor2(a, b), manager->ite(a, manager->neg(b), b));
+    EXPECT_EQ(manager->xor2(c, d), manager->ite(c, manager->neg(d), d));
+    EXPECT_EQ(manager->xor2(cd, f), manager->ite(cd, manager->neg(f) ,f));
 }
 
 
@@ -369,9 +368,9 @@ TEST_F(TestManager, xor2) //ite(a, ~b, b)
 TEST_F(TestManager, nor2) //ite(a, 0, ~b)
 {
 
-    EXPECT_EQ(manager->nor2(2, 3), manager->ite(2, 0, manager->neg(3)));
-    EXPECT_EQ(manager->nor2(4, 5), manager->ite(4, 0, manager->neg(5)));
-    EXPECT_EQ(manager->nor2(6, 7), manager->ite(6, 0, manager->neg(7)));
+    EXPECT_EQ(manager->nor2(a, b), manager->ite(a, manager->False(), manager->neg(b)));
+    EXPECT_EQ(manager->nor2(c, d), manager->ite(c,manager->False(), manager->neg(d)));
+    EXPECT_EQ(manager->nor2(cd, f), manager->ite(cd,manager->False(), manager->neg(f)));
 }
 
 
@@ -383,9 +382,9 @@ TEST_F(TestManager, nor2) //ite(a, 0, ~b)
 TEST_F(TestManager, xnor2) //ite(a, b, ~b)
 {
 
-    EXPECT_EQ(manager->xnor2(2, 3), manager->ite(2, 3, manager->neg(3)));
-    EXPECT_EQ(manager->xnor2(4, 5), manager->ite(4, 5, manager->neg(5)));
-    EXPECT_EQ(manager->xnor2(6, 7), manager->ite(6, 7, manager->neg(7)));
+    EXPECT_EQ(manager->xnor2(a, b), manager->ite(a, b, manager->neg(b)));
+    EXPECT_EQ(manager->xnor2(c, d), manager->ite(c, d, manager->neg(d)));
+    EXPECT_EQ(manager->xnor2(cd, f), manager->ite(cd, f, manager->neg(f)));
 };
 
 #endif
