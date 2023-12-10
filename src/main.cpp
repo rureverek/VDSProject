@@ -30,9 +30,11 @@ int main(int argc, char* argv[])
 
     std::cout << "START!" << std::endl;
 
+    /* Print Table */
     for(auto [key, value] : manager.Table){
         std::cout<<value.id<<":"<<key.high<<","<<key.low<<","<<key.TopVar<<std::endl;
     }
 
+    /* Print graph */
     manager.visualizeBDD("../", f);
 }
