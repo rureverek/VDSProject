@@ -175,14 +175,16 @@ namespace ClassProject
 
         if (auto search = computed_table.find({top_variable, f_high, f_low}); search != computed_table.end())
         {
-            computed_table[{i, t, e}] = search->second;
+            computed_table[{top_variable, f_high, f_low}] = search->second;
             return search->second;
         }
 
         BDD_ID p = Table.size();
+
+        computed_table.emplace(Unique_Table_Key({top_variable,f_high,f_low}),p);
+
         Table.emplace(Unique_Table_Key({top_variable,f_high,f_low}),Unique_Table_Entry({std::to_string(p), p}));
 
-        computed_table.emplace(Unique_Table_Key({top_variable,f_high,f_low}),Table.size());
         return p;
   }
 
@@ -218,6 +220,10 @@ namespace ClassProject
         }
     }
 
+    BDD_ID Manager::coFactorTrue(BDD_ID f){
+        return coFactorTrue(f,topVar(f));
+    }
+
     BDD_ID Manager::coFactorFalse(BDD_ID f, BDD_ID x)
     {
         BDD_ID T, F;
@@ -248,6 +254,10 @@ namespace ClassProject
             F = coFactorFalse(f_key.low, x);
             return ite(f_key.TopVar, T, F);
         }
+    }
+
+    BDD_ID Manager::coFactorFalse(BDD_ID f){
+        return coFactorFalse(f,topVar(f));
     }
 
     /**
@@ -301,7 +311,7 @@ namespace ClassProject
 
         nodes_of_root.insert(root);
 
-        if(isConstant(root)){
+        if(!(isConstant(root))){
             findNodes(coFactorTrue(root), nodes_of_root);
             findNodes(coFactorFalse(root), nodes_of_root);
         }
@@ -309,11 +319,17 @@ namespace ClassProject
     }
 
 
-    void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root){
+    void Manager::findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root){
 
-        vars_of_root.insert(root);
+        std::set<BDD_ID> temp_node_of_roots;
 
+        findNodes(root,temp_node_of_roots);
 
+        for(BDD_ID i:temp_node_of_roots){
+            if(!(isConstant(i))){
+                vars_of_root.insert(topVar(i));
+            }
+        }
     }
 
     size_t Manager::uniqueTableSize(){
