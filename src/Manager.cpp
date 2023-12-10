@@ -297,7 +297,28 @@ namespace ClassProject
         return ""; //It should never reach here...
     }
 
+    void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root){
 
+        nodes_of_root.insert(root);
+
+        if(isConstant(root)){
+            findNodes(coFactorTrue(root), nodes_of_root);
+            findNodes(coFactorFalse(root), nodes_of_root);
+        }
+        
+    }
+
+
+    void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root){
+
+        vars_of_root.insert(root);
+
+
+    }
+
+    size_t Manager::uniqueTableSize(){
+        return Table.size();
+    }
 
 }
         
