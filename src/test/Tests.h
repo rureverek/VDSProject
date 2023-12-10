@@ -164,63 +164,59 @@ TEST_F(InitManager, isVar)
 
 TEST_F(TestManager, topVar) {
 
-    EXPECT_EQ(manager->topVar(2), 2);
-    EXPECT_EQ(manager->topVar(3), 3);
-    EXPECT_EQ(manager->topVar(4), 4);
-    EXPECT_EQ(manager->topVar(5), 5);
-    EXPECT_EQ(manager->topVar(6), 2);
-    EXPECT_EQ(manager->topVar(7), 4);
+    EXPECT_EQ(manager->topVar(a), a);
+    EXPECT_EQ(manager->topVar(b), b);
+    EXPECT_EQ(manager->topVar(c), c);
+    EXPECT_EQ(manager->topVar(d), d);
+    EXPECT_EQ(manager->topVar(ab), a);
+    EXPECT_EQ(manager->topVar(cd), c);
 
 }
 
 //test ite function
 TEST_F(TestManager, ite_terminal_case) {
 
-    EXPECT_EQ(manager->ite(1, 1, 2) , 1); //Test i==True Cases - Terminal
-    EXPECT_EQ(manager->ite(1, 4, 1) , 4); //Test i==True Cases - Not Terminal
+    EXPECT_EQ(manager->ite(manager->True(), manager->True(), a) , manager->True()); //Test i==True Cases - Terminal
+    EXPECT_EQ(manager->ite(manager->True(), d, manager->True()) , d); //Test i==True Cases - Not Terminal
 
-    EXPECT_EQ(manager->ite(0, 2, 0) , 0); //Test i==False Case - Terminal
-    EXPECT_EQ(manager->ite(0, 4, 2) , 2); //Test i==False Case - Not Terminal
+    EXPECT_EQ(manager->ite(manager->False(), a, manager->False()) , manager->False()); //Test i==False Case - Terminal
+    EXPECT_EQ(manager->ite(manager->False(), c, a) , a); //Test i==False Case - Not Terminal
 
-    EXPECT_EQ(manager->ite(4, 1, 0) , 4); //Test Node with 1,0 subnodes
+    EXPECT_EQ(manager->ite(4, manager->True(), manager->False()) , c); //Test Node with 1,0 subnodes
 
-    EXPECT_EQ(manager->ite(2, 1, 3) , 6); //Test Existing node (a+b), not terminal
+    EXPECT_EQ(manager->ite(a, manager->True(), b) , ab); //Test Existing node (a+b), not terminal
 
 }
 
 TEST_F(InitManager, ite) {
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
 
     EXPECT_EQ(manager->Table.size(),6);
 
     EXPECT_EQ(manager->computed_table.size(), 0);
 
-    EXPECT_EQ(manager->ite(2, 3, 0) , 6);
-
+    /* a+b */
+    EXPECT_EQ(manager->ite(a, b, manager->False()) , 6);
     EXPECT_EQ(manager->computed_table.size(), 1);
 
-    EXPECT_EQ(manager->ite(4, 5, 0) , 7);
-
+    /* c*d */
+    EXPECT_EQ(manager->ite(c, d, manager->False()) , 7);
     EXPECT_EQ(manager->computed_table.size(), 2);
-
     EXPECT_EQ(manager->Table.size(), 8);
 
+    /* b*c*d */
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     EXPECT_EQ(manager->computed_table.size(), 4);
 
+    /* Call again */
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     EXPECT_EQ(manager->computed_table.size(), 4);
-
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     EXPECT_EQ(manager->computed_table.size(), 4);
-
     EXPECT_EQ(manager->Table.size(),10);
 }
 
@@ -232,30 +228,30 @@ TEST_F(InitManager, ite) {
 TEST_F(TestManager, getTopVarName)
 {
 
-    EXPECT_EQ(manager->getTopVarName(2), "a");
-    EXPECT_EQ(manager->getTopVarName(3), "b");
-    EXPECT_EQ(manager->getTopVarName(6), "a");
-    EXPECT_EQ(manager->getTopVarName(7), "c");
+    EXPECT_EQ(manager->getTopVarName(a), "a");
+    EXPECT_EQ(manager->getTopVarName(b), "b");
+    EXPECT_EQ(manager->getTopVarName(ab), "a");
+    EXPECT_EQ(manager->getTopVarName(cd), "c");
 
 }
 
 TEST_F(InitManager, CoFactorTrue) {
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
-    manager->Table[{2,1,3}] = {"a+b", 6}; //TODO: replace with or2 when possible
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
+    ClassProject::BDD_ID ab = manager->or2(a,b);
 
-    EXPECT_EQ(manager->coFactorTrue(0,4), 0); //Terminal Case - f = 0
-    EXPECT_EQ(manager->coFactorTrue(1,3), 1); //Terminal Case - f = 1
-    EXPECT_EQ(manager->coFactorTrue(0,0), 0); //Terminal Case - x = 0
-    EXPECT_EQ(manager->coFactorTrue(5,1), 5); //Terminal Case - x = 1
+    EXPECT_EQ(manager->coFactorTrue(manager->False(),c), manager->False()); //Terminal Case - f = 0
+    EXPECT_EQ(manager->coFactorTrue(manager->True(),b), manager->True()); //Terminal Case - f = 1
+    EXPECT_EQ(manager->coFactorTrue(manager->False(),manager->False()), manager->False()); //Terminal Case - x = 0
+    EXPECT_EQ(manager->coFactorTrue(d,manager->True()), d); //Terminal Case - x = 1
 
-    EXPECT_EQ(manager->coFactorTrue(6,2), 3); //Case: f.top == x ret f.high
+    EXPECT_EQ(manager->coFactorTrue(ab,a), manager->True()); //Case: f.top == x ret f.high
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorTrue(6,5), manager->ite(2, manager->coFactorTrue(3, 5), manager->coFactorTrue(1,5)));
+    EXPECT_EQ(manager->coFactorTrue(ab,d), manager->ite(a, manager->coFactorTrue(b, d), manager->coFactorTrue(manager->True(),d)));
 
 }
 
