@@ -9,10 +9,10 @@
 #include "../Manager.h"
 
 /**
- * @brief TestManager Class
+ * @brief InitManager Class
  *
  */
-class TestManager : public testing::Test
+class InitManager : public testing::Test
 {
 protected:
     /**
@@ -37,10 +37,46 @@ protected:
 };
 
 /**
+ * @brief TestManager Class
+ * Sets up main scenario of the system: nodes a,b,c,d, a+b, c*d, b*c*d
+ */
+class TestManager : public testing::Test
+{
+protected:
+    /**
+     * @brief Set the Up object
+     *
+     */
+    void SetUp() override
+    {
+        manager = new ClassProject::Manager;
+        a = manager->createVar("a");
+        b = manager->createVar("b");
+        c = manager->createVar("c");
+        d = manager->createVar("d");
+        ab = manager->or2(a,b);
+        cd = manager->and2(c,d);
+        f = manager->and2(ab,cd);
+    }
+
+    /**
+     * @brief Deletes manager
+     *
+     */
+    void TearDown() override
+    {
+        delete manager;
+    }
+
+    ClassProject::Manager *manager;
+    ClassProject::BDD_ID a,b,c,d,ab,cd,f;
+};
+
+/**
  * @brief InitTableEntries Test
  *
  */
-TEST_F(TestManager, InitTableEntries)
+TEST_F(InitManager, InitTableEntries)
 {
     ClassProject::Manager::Unique_Table_Key key = {0, 0, 0};
 
@@ -54,7 +90,7 @@ TEST_F(TestManager, InitTableEntries)
  * @brief InitTableSize Test
  *
  */
-TEST_F(TestManager, InitTableSize)
+TEST_F(InitManager, InitTableSize)
 {
 
     EXPECT_EQ(manager->Table.size(), 2);
@@ -64,7 +100,7 @@ TEST_F(TestManager, InitTableSize)
  * @brief CreateVar Test
  *
  */
-TEST_F(TestManager, CreateVar)
+TEST_F(InitManager, CreateVar)
 {
 
     ClassProject::BDD_ID ID = manager->createVar("a");
@@ -77,7 +113,7 @@ TEST_F(TestManager, CreateVar)
  * @brief TrueID Test
  *
  */
-TEST_F(TestManager, TrueID)
+TEST_F(InitManager, TrueID)
 {
     ClassProject::BDD_ID id = manager->True();
 
@@ -88,7 +124,7 @@ TEST_F(TestManager, TrueID)
  * @brief FalseID Test
  *
  */
-TEST_F(TestManager, FalseID)
+TEST_F(InitManager, FalseID)
 {
 
     ClassProject::BDD_ID id = manager->False();
@@ -100,7 +136,7 @@ TEST_F(TestManager, FalseID)
  * @brief isConstant Test
  *
  */
-TEST_F(TestManager, isConstant)
+TEST_F(InitManager, isConstant)
 {
     EXPECT_TRUE(manager->isConstant(0));
     EXPECT_TRUE(manager->isConstant(1));
@@ -110,7 +146,7 @@ TEST_F(TestManager, isConstant)
  * @brief isVariable Test
  *
  */
-TEST_F(TestManager, isVar)
+TEST_F(InitManager, isVar)
 {
     manager->Table[{2, 0, 1}] = {"a", 2};
     manager->Table[{3, 0, 1}] = {"ab", 3};
@@ -128,77 +164,58 @@ TEST_F(TestManager, isVar)
 
 TEST_F(TestManager, topVar) {
 
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"a+b", 6};
-    manager->Table[{4,0,5}] = {"c*d", 7};
-
-    EXPECT_EQ(manager->topVar(2), 2);
-    EXPECT_EQ(manager->topVar(3), 3);
-    EXPECT_EQ(manager->topVar(4), 4);
-    EXPECT_EQ(manager->topVar(5), 5);
-    EXPECT_EQ(manager->topVar(6), 2);
-    EXPECT_EQ(manager->topVar(7), 4);
+    EXPECT_EQ(manager->topVar(a), a);
+    EXPECT_EQ(manager->topVar(b), b);
+    EXPECT_EQ(manager->topVar(c), c);
+    EXPECT_EQ(manager->topVar(d), d);
+    EXPECT_EQ(manager->topVar(ab), a);
+    EXPECT_EQ(manager->topVar(cd), c);
 
 }
 
 //test ite function
 TEST_F(TestManager, ite_terminal_case) {
 
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"a+b", 6};
-    manager->Table[{4,0,5}] = {"c*d", 7};
+    EXPECT_EQ(manager->ite(manager->True(), manager->True(), a) , manager->True()); //Test i==True Cases - Terminal
+    EXPECT_EQ(manager->ite(manager->True(), d, manager->True()) , d); //Test i==True Cases - Not Terminal
 
-    EXPECT_EQ(manager->ite(1, 1, 2) , 1); //Test i==True Cases - Terminal
-    EXPECT_EQ(manager->ite(1, 4, 1) , 4); //Test i==True Cases - Not Terminal
+    EXPECT_EQ(manager->ite(manager->False(), a, manager->False()) , manager->False()); //Test i==False Case - Terminal
+    EXPECT_EQ(manager->ite(manager->False(), c, a) , a); //Test i==False Case - Not Terminal
 
-    EXPECT_EQ(manager->ite(0, 2, 0) , 0); //Test i==False Case - Terminal
-    EXPECT_EQ(manager->ite(0, 4, 2) , 2); //Test i==False Case - Not Terminal
+    EXPECT_EQ(manager->ite(4, manager->True(), manager->False()) , c); //Test Node with 1,0 subnodes
 
-    EXPECT_EQ(manager->ite(4, 1, 0) , 4); //Test Node with 1,0 subnodes
-
-    EXPECT_EQ(manager->ite(2, 1, 3) , 6); //Test Existing node (a+b), not terminal
+    EXPECT_EQ(manager->ite(a, manager->True(), b) , ab); //Test Existing node (a+b), not terminal
 
 }
 
-TEST_F(TestManager, ite) {
+TEST_F(InitManager, ite) {
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
 
     EXPECT_EQ(manager->Table.size(),6);
-
     EXPECT_EQ(manager->computed_table.size(), 0);
 
-    EXPECT_EQ(manager->ite(2, 3, 0) , 6);
-
+    /* a+b */
+    EXPECT_EQ(manager->ite(a, b, manager->False()) , 6);
     EXPECT_EQ(manager->computed_table.size(), 1);
 
-    EXPECT_EQ(manager->ite(4, 5, 0) , 7);
-
+    /* c*d */
+    EXPECT_EQ(manager->ite(c, d, manager->False()) , 7);
     EXPECT_EQ(manager->computed_table.size(), 2);
-
     EXPECT_EQ(manager->Table.size(), 8);
 
+    /* b*c*d */
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     EXPECT_EQ(manager->computed_table.size(), 4);
 
+    /* Call again */
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     EXPECT_EQ(manager->computed_table.size(), 4);
-
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     EXPECT_EQ(manager->computed_table.size(), 4);
-
     EXPECT_EQ(manager->Table.size(),10);
 }
 
@@ -209,57 +226,51 @@ TEST_F(TestManager, ite) {
 
 TEST_F(TestManager, getTopVarName)
 {
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"a+b", 6};
-    manager->Table[{4,0,5}] = {"c*d", 7};
 
-    EXPECT_EQ(manager->getTopVarName(2), "a");
-    EXPECT_EQ(manager->getTopVarName(3), "b");
-    EXPECT_EQ(manager->getTopVarName(6), "a");
-    EXPECT_EQ(manager->getTopVarName(7), "c");
+    EXPECT_EQ(manager->getTopVarName(a), "a");
+    EXPECT_EQ(manager->getTopVarName(b), "b");
+    EXPECT_EQ(manager->getTopVarName(ab), "a");
+    EXPECT_EQ(manager->getTopVarName(cd), "c");
 
 }
 
-TEST_F(TestManager, CoFactorTrue) {
+TEST_F(InitManager, CoFactorTrue) {
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
-    manager->Table[{2,1,3}] = {"a+b", 6}; //TODO: replace with or2 when possible
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
+    ClassProject::BDD_ID ab = manager->or2(a,b);
 
-    EXPECT_EQ(manager->coFactorTrue(0,4), 0); //Terminal Case - f = 0
-    EXPECT_EQ(manager->coFactorTrue(1,3), 1); //Terminal Case - f = 1
-    EXPECT_EQ(manager->coFactorTrue(0,0), 0); //Terminal Case - x = 0
-    EXPECT_EQ(manager->coFactorTrue(5,1), 5); //Terminal Case - x = 1
+    EXPECT_EQ(manager->coFactorTrue(manager->False(),c), manager->False()); //Terminal Case - f = 0
+    EXPECT_EQ(manager->coFactorTrue(manager->True(),b), manager->True()); //Terminal Case - f = 1
+    EXPECT_EQ(manager->coFactorTrue(manager->False(),manager->False()), manager->False()); //Terminal Case - x = 0
+    EXPECT_EQ(manager->coFactorTrue(d,manager->True()), d); //Terminal Case - x = 1
 
-    EXPECT_EQ(manager->coFactorTrue(6,2), 3); //Case: f.top == x ret f.high
+    EXPECT_EQ(manager->coFactorTrue(ab,a), manager->True()); //Case: f.top == x ret f.high
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorTrue(6,5), manager->ite(2, manager->coFactorTrue(3, 5), manager->coFactorTrue(1,5)));
+    EXPECT_EQ(manager->coFactorTrue(ab,d), manager->ite(a, manager->coFactorTrue(b, d), manager->coFactorTrue(manager->True(),d)));
 
 }
 
-TEST_F(TestManager, CoFactorFalse) {
+TEST_F(InitManager, CoFactorFalse) {
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
-    manager->Table[{2,1,3}] = {"a+b", 6}; //TODO: replace with or2 when possible
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
+    ClassProject::BDD_ID ab = manager->or2(a,b);
 
-    EXPECT_EQ(manager->coFactorFalse(0,4), 0); //Terminal Case - f = 0
-    EXPECT_EQ(manager->coFactorFalse(1,3), 1); //Terminal Case - f = 1
-    EXPECT_EQ(manager->coFactorFalse(0,0), 0); //Terminal Case - x = 0
-    EXPECT_EQ(manager->coFactorFalse(5,1), 5); //Terminal Case - x = 1
+    EXPECT_EQ(manager->coFactorFalse(manager->False(),d), manager->False()); //Terminal Case - f = 0
+    EXPECT_EQ(manager->coFactorFalse(manager->True(),c), manager->True()); //Terminal Case - f = 1
+    EXPECT_EQ(manager->coFactorFalse(manager->False(),manager->False()), manager->False()); //Terminal Case - x = 0
+    EXPECT_EQ(manager->coFactorFalse(d,manager->True()), d); //Terminal Case - x = 1
 
-    EXPECT_EQ(manager->coFactorFalse(6,2), 1); //Case: f.top == x ret f.low
+    EXPECT_EQ(manager->coFactorFalse(ab,a), b); //Case: f.top == x ret f.low
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorFalse(6,5), manager->ite(2, manager->coFactorFalse(3, 5), manager->coFactorFalse(1,5)));
+    EXPECT_EQ(manager->coFactorFalse(ab,d), manager->ite(a, manager->coFactorFalse(b, d), manager->coFactorFalse(manager->True(),d)));
 
 }
 
@@ -267,22 +278,11 @@ TEST_F(TestManager, CoFactorFalse) {
 
 TEST_F(TestManager, findNodes){
 
-    manager->createVar("a");
-    manager->createVar("b");
-    manager->createVar("c");
-    manager->createVar("d");
-
-    EXPECT_EQ(manager->ite(2, 3, 0) , 6);
-
-    EXPECT_EQ(manager->ite(4, 5, 0) , 7);
-
-    EXPECT_EQ(manager->ite(6, 1, 7) , 9);
-
     std::set<ClassProject::BDD_ID> nodes_of_root,vars_of_root;
 
     std::set<ClassProject::BDD_ID> correct_answer = {0, 1, 5, 7, 8, 9};
 
-    manager->findNodes(9, nodes_of_root);
+    manager->findNodes(f, nodes_of_root);
     
     for(auto i : nodes_of_root){
         std::cout << ' ' << i;
@@ -291,7 +291,7 @@ TEST_F(TestManager, findNodes){
     
     EXPECT_EQ(correct_answer, nodes_of_root);
 
-    manager->findVars(9, vars_of_root);
+    manager->findVars(f, vars_of_root);
 
     for (auto i : vars_of_root)
     {
@@ -312,16 +312,10 @@ TEST_F(TestManager, findNodes){
 
 TEST_F(TestManager, neg)
 {
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"a+b", 6};
-    manager->Table[{4,0,5}] = {"c*d", 7};
 
-    EXPECT_EQ(manager->neg(2), manager->ite(2, 0, 1));
-    EXPECT_EQ(manager->neg(6), manager->ite(6, 0, 1));
-    EXPECT_EQ(manager->neg(7), manager->ite(7, 0 ,1));
+    EXPECT_EQ(manager->neg(a), manager->ite(a, manager->False(), manager->True()));
+    EXPECT_EQ(manager->neg(ab), manager->ite(ab, manager->False(), manager->True()));
+    EXPECT_EQ(manager->neg(cd), manager->ite(cd, manager->False() ,manager->True()));
 }
 
 /**
@@ -331,17 +325,11 @@ TEST_F(TestManager, neg)
 
 TEST_F(TestManager, and2)
 {
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"e", 6};
-    manager->Table[{4,0,5}] = {"f", 7};
 
-    EXPECT_EQ(manager->and2(2, 3), manager->ite(2, 3, 0));
-    EXPECT_EQ(manager->and2(4, 5), manager->ite(4, 5, 0));
-    EXPECT_EQ(manager->and2(2, 4), manager->ite(2, 4, 0));
-    EXPECT_EQ(manager->and2(6, 7), manager->ite(6, 7 ,0));
+    EXPECT_EQ(manager->and2(a, b), manager->ite(a, b, manager->False()));
+    EXPECT_EQ(manager->and2(c, d), manager->ite(c, d, manager->False()));
+    EXPECT_EQ(manager->and2(a, c), manager->ite(a, c, manager->False()));
+    EXPECT_EQ(manager->and2(cd, f), manager->ite(cd, f ,manager->False()));
 }
 
 /**
@@ -352,17 +340,10 @@ TEST_F(TestManager, and2)
 TEST_F(TestManager, or2)
 {
 
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"e", 6};
-    manager->Table[{4,0,5}] = {"f", 7};
-
-    EXPECT_EQ(manager->or2(2, 3), manager->ite(2, 1, 3));
-    EXPECT_EQ(manager->or2(4, 5), manager->ite(4, 1, 5));
-    EXPECT_EQ(manager->or2(6, 7), manager->ite(6, 1 ,7));
-    EXPECT_EQ(manager->or2(6, 7), manager->ite(6, 1 ,7));
+    EXPECT_EQ(manager->or2(a, b), manager->ite(a, manager->True(), b));
+    EXPECT_EQ(manager->or2(c, d), manager->ite(c, manager->True(), d));
+    EXPECT_EQ(manager->or2(cd, f), manager->ite(cd, manager->True() ,f));
+    EXPECT_EQ(manager->or2(cd, f), manager->ite(cd, manager->True() ,f));
 }
 
 /**
@@ -373,16 +354,9 @@ TEST_F(TestManager, or2)
 TEST_F(TestManager, xor2) //ite(a, ~b, b)
 {
 
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"e", 6};
-    manager->Table[{4,0,5}] = {"f", 7};
-
-    EXPECT_EQ(manager->xor2(2, 3), manager->ite(2, manager->neg(3), 3));
-    EXPECT_EQ(manager->xor2(4, 5), manager->ite(4, manager->neg(5), 5));
-    EXPECT_EQ(manager->xor2(6, 7), manager->ite(6, manager->neg(7) ,7));
+    EXPECT_EQ(manager->xor2(a, b), manager->ite(a, manager->neg(b), b));
+    EXPECT_EQ(manager->xor2(c, d), manager->ite(c, manager->neg(d), d));
+    EXPECT_EQ(manager->xor2(cd, f), manager->ite(cd, manager->neg(f) ,f));
 }
 
 
@@ -394,16 +368,9 @@ TEST_F(TestManager, xor2) //ite(a, ~b, b)
 TEST_F(TestManager, nor2) //ite(a, 0, ~b)
 {
 
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"e", 6};
-    manager->Table[{4,0,5}] = {"f", 7};
-
-    EXPECT_EQ(manager->nor2(2, 3), manager->ite(2, 0, manager->neg(3)));
-    EXPECT_EQ(manager->nor2(4, 5), manager->ite(4, 0, manager->neg(5)));
-    EXPECT_EQ(manager->nor2(6, 7), manager->ite(6, 0, manager->neg(7)));
+    EXPECT_EQ(manager->nor2(a, b), manager->ite(a, manager->False(), manager->neg(b)));
+    EXPECT_EQ(manager->nor2(c, d), manager->ite(c,manager->False(), manager->neg(d)));
+    EXPECT_EQ(manager->nor2(cd, f), manager->ite(cd,manager->False(), manager->neg(f)));
 }
 
 
@@ -414,16 +381,10 @@ TEST_F(TestManager, nor2) //ite(a, 0, ~b)
 
 TEST_F(TestManager, xnor2) //ite(a, b, ~b)
 {
-    manager->Table[{2,0,1}] = {"a", 2};
-    manager->Table[{3,0,1}] = {"b", 3};
-    manager->Table[{4,0,1}] = {"c", 4};
-    manager->Table[{5,0,1}] = {"d", 5};
-    manager->Table[{2,1,3}] = {"e", 6};
-    manager->Table[{4,0,5}] = {"f", 7};
 
-    EXPECT_EQ(manager->xnor2(2, 3), manager->ite(2, 3, manager->neg(3)));
-    EXPECT_EQ(manager->xnor2(4, 5), manager->ite(4, 5, manager->neg(5)));
-    EXPECT_EQ(manager->xnor2(6, 7), manager->ite(6, 7, manager->neg(7)));
+    EXPECT_EQ(manager->xnor2(a, b), manager->ite(a, b, manager->neg(b)));
+    EXPECT_EQ(manager->xnor2(c, d), manager->ite(c, d, manager->neg(d)));
+    EXPECT_EQ(manager->xnor2(cd, f), manager->ite(cd, f, manager->neg(f)));
 };
 
 #endif
