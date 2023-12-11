@@ -140,6 +140,7 @@ TEST_F(InitManager, isConstant)
 {
     EXPECT_TRUE(manager->isConstant(0));
     EXPECT_TRUE(manager->isConstant(1));
+    EXPECT_FALSE(manager->isConstant("a"));
 }
 
 /**
@@ -387,4 +388,27 @@ TEST_F(TestManager, xnor2) //ite(a, b, ~b)
     EXPECT_EQ(manager->xnor2(cd, f), manager->ite(cd, f, manager->neg(f)));
 };
 
+/**
+ * @brief xnor2 Test
+ *
+ */
+
+TEST_F(TestManager, nand2) //ite(a, ~b, 1)
+{
+    EXPECT_EQ(manager->nand2(manager->False(), manager->False()), manager->True());
+    EXPECT_EQ(manager->nand2(manager->False(), manager->True()), manager->True());
+    EXPECT_EQ(manager->nand2(manager->True(), manager->False()), manager->True());
+    EXPECT_EQ(manager->nand2(manager->True(), manager->True()), manager->False());
+
+    EXPECT_EQ(manager->nand2(a, manager->False()), manager->True());
+    EXPECT_EQ(manager->nand2(a, manager->True()), manager->neg(a));
+    EXPECT_EQ(manager->nand2(manager->False(), a), manager->True());
+    EXPECT_EQ(manager->nand2(manager->True(), a), manager->neg(a));
+
+    ClassProject::BDD_ID  a_nand_b = manager->nand2(a, b);
+
+    EXPECT_EQ(manager->topVar(a_nand_b), a);
+    EXPECT_EQ(manager->coFactorTrue(a_nand_b), manager->neg(b));
+    EXPECT_EQ(manager->coFactorFalse(a_nand_b), manager->True());
+}
 #endif
