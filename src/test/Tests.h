@@ -138,9 +138,12 @@ TEST_F(InitManager, FalseID)
  */
 TEST_F(InitManager, isConstant)
 {
-    EXPECT_TRUE(manager->isConstant(0));
+    manager->Table[{2, 0, 1}] = {"a", 2};
+    manager->Table[{3, 0, 1}] = {"ab", 3};
+
+    EXPECT_TRUE(manager->isConstant(0)); //ID's 0 and 1 are already created
     EXPECT_TRUE(manager->isConstant(1));
-    EXPECT_FALSE(manager->isConstant("a"));
+    EXPECT_FALSE(manager->isConstant(2));
 }
 
 /**
