@@ -410,8 +410,9 @@ TEST_F(TestManager, nand2) //ite(a, ~b, 1)
 
     ClassProject::BDD_ID  a_nand_b = manager->nand2(a, b);
 
-    EXPECT_EQ(manager->topVar(a_nand_b), a);
     EXPECT_EQ(manager->coFactorTrue(a_nand_b), manager->neg(b));
     EXPECT_EQ(manager->coFactorFalse(a_nand_b), manager->True());
+    EXPECT_EQ(manager->topVar(a_nand_b), a);
+
 }
 #endif
