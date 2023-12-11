@@ -24,9 +24,9 @@ int main(int argc, char* argv[])
     ClassProject::BDD_ID b = manager.createVar("b");
     ClassProject::BDD_ID c = manager.createVar("c");
     ClassProject::BDD_ID d = manager.createVar("d");
-    ClassProject::BDD_ID ab = manager.or2(a,b);
+    ClassProject::BDD_ID ab = manager.and2(a,b);
     ClassProject::BDD_ID cd = manager.and2(c,d);
-    ClassProject::BDD_ID f = manager.and2(ab,cd);
+    ClassProject::BDD_ID f = manager.or2(ab,cd);
 
     std::cout << "START!" << std::endl;
 

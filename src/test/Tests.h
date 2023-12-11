@@ -217,6 +217,7 @@ TEST_F(InitManager, ite) {
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
     EXPECT_EQ(manager->computed_table.size(), 4);
     EXPECT_EQ(manager->Table.size(),10);
+
 }
 
 /**
