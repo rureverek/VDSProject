@@ -138,12 +138,15 @@ TEST_F(InitManager, FalseID)
  */
 TEST_F(InitManager, isConstant)
 {
-    manager->Table[{2, 0, 1}] = {"a", 2};
-    manager->Table[{3, 0, 1}] = {"ab", 3};
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
 
-    EXPECT_TRUE(manager->isConstant(0)); //ID's 0 and 1 are already created
-    EXPECT_TRUE(manager->isConstant(1));
-    EXPECT_FALSE(manager->isConstant(2));
+    EXPECT_TRUE(manager->isConstant(manager->False())); //ID's 0 and 1 are already created
+    EXPECT_TRUE(manager->isConstant(manager->True()));
+    EXPECT_FALSE(manager->isConstant(a));
+    EXPECT_FALSE(manager->isConstant(b));
 }
 
 /**
@@ -152,13 +155,15 @@ TEST_F(InitManager, isConstant)
  */
 TEST_F(InitManager, isVar)
 {
-    manager->Table[{2, 0, 1}] = {"a", 2};
-    manager->Table[{3, 0, 1}] = {"ab", 3};
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
 
-    EXPECT_FALSE(manager->isVariable(0));
-    EXPECT_FALSE(manager->isVariable(1));
-    EXPECT_TRUE(manager->isVariable(2));
-    EXPECT_FALSE(manager->isVariable(3));
+    EXPECT_FALSE(manager->isVariable(manager->False()));
+    EXPECT_FALSE(manager->isVariable(manager->True()));
+    EXPECT_TRUE(manager->isVariable(a));
+    EXPECT_TRUE(manager->isVariable(b));
 }
 
 /**
