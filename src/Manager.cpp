@@ -148,15 +148,12 @@ namespace ClassProject
         return False(); //In case of failure.
     }
 
-
     BDD_ID Manager::ite(BDD_ID i, BDD_ID t, BDD_ID e)
     {
         if (i == True()) {
             return t;
         }else if (i == False()){
             return e;
-        //}else if (t == False()) {
-        //    return e;
         } else if (t == e) {
             return t;
         } else if (t == True() && e == False()){
@@ -192,7 +189,8 @@ namespace ClassProject
         Table.emplace(Unique_Table_Key({top_variable,f_low,f_high}),Unique_Table_Entry({std::to_string(p), p}));
 
         return p;
-  }
+    }
+
 
     BDD_ID Manager::coFactorTrue(BDD_ID f, BDD_ID x)
     {
@@ -360,7 +358,7 @@ namespace ClassProject
 
     BDD_ID Manager::nand2(BDD_ID a, BDD_ID b)
     {
-        return neg(and2(a, b));
+        return ite(a, neg(b), 1);
     }
 
     /**

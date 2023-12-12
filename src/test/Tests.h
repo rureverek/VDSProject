@@ -138,8 +138,12 @@ TEST_F(InitManager, FalseID)
  */
 TEST_F(InitManager, isConstant)
 {
-    EXPECT_TRUE(manager->isConstant(0));
+    manager->Table[{2, 0, 1}] = {"a", 2};
+    manager->Table[{3, 0, 1}] = {"ab", 3};
+
+    EXPECT_TRUE(manager->isConstant(0)); //ID's 0 and 1 are already created
     EXPECT_TRUE(manager->isConstant(1));
+    EXPECT_FALSE(manager->isConstant(2));
 }
 
 /**
@@ -263,7 +267,7 @@ TEST_F(InitManager, CoFactorTrue) {
     EXPECT_EQ(manager->coFactorTrue(ab,a), manager->True()); //Case: f.top == x ret f.high
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorTrue(ab,d), manager->ite(a, manager->coFactorTrue(b, d), manager->coFactorTrue(manager->True(),d)));
+    EXPECT_EQ(manager->coFactorTrue(ab,d), manager->ite(a, manager->coFactorTrue(manager->True(), a), manager->coFactorTrue(b,a))); //b, d
 
 }
 
@@ -283,7 +287,7 @@ TEST_F(InitManager, CoFactorFalse) {
     EXPECT_EQ(manager->coFactorFalse(ab,a), b); //Case: f.top == x ret f.low
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorFalse(ab,d), manager->ite(a, manager->coFactorFalse(b, d), manager->coFactorFalse(manager->True(),d)));
+    EXPECT_EQ(manager->coFactorFalse(ab,d), manager->ite(a, manager->coFactorFalse(manager->True(), a), manager->coFactorFalse(b,a)));
 
 }
 
@@ -400,6 +404,9 @@ TEST_F(TestManager, xnor2) //ite(a, b, ~b)
     EXPECT_EQ(manager->xnor2(cd, f), manager->ite(cd, f, manager->neg(f)));
 };
 
+/**
+ * @brief nand2 Test
+*/ 
 TEST_F(TestManager, nand2) //ite(a, ~b, 1)
 {
     EXPECT_EQ(manager->nand2(manager->False(), manager->False()), manager->True());
