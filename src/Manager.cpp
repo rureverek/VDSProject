@@ -154,8 +154,6 @@ namespace ClassProject
             return t;
         }else if (i == False()){
             return e;
-            //}else if (t == False()) {
-            //    return e;
         } else if (t == e) {
             return t;
         } else if (t == True() && e == False()){

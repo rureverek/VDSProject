@@ -221,6 +221,19 @@ TEST_F(InitManager, ite) {
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
     EXPECT_EQ(manager->computed_table.size(), 4);
     EXPECT_EQ(manager->Table.size(),10);
+
+    std::cout << "Unique table \n";
+    for (auto it = manager->Table.cbegin(); it != manager->Table.cend(); ++it)
+    {
+        std::cout << "{" << (*it).first.TopVar << "|" << (*it).first.low << "|" << (*it).first.high << ": " << (*it).second.id << "}\n";
+    }
+
+
+    std::cout << "Computed table \n";
+    for (auto it = manager->computed_table.cbegin(); it != manager->computed_table.cend(); ++it)
+    {
+        std::cout << "{" << (*it).first.TopVar << "|" << (*it).first.low << "|" << (*it).first.high << ": " << (*it).second << "}\n";
+    }
 }
 
 /**
@@ -392,10 +405,8 @@ TEST_F(TestManager, xnor2) //ite(a, b, ~b)
 };
 
 /**
- * @brief xnor2 Test
- *
- */
-
+ * @brief nand2 Test
+*/ 
 TEST_F(TestManager, nand2) //ite(a, ~b, 1)
 {
     EXPECT_EQ(manager->nand2(manager->False(), manager->False()), manager->True());
@@ -415,4 +426,5 @@ TEST_F(TestManager, nand2) //ite(a, ~b, 1)
     EXPECT_EQ(manager->topVar(a_nand_b), a);
 
 }
+
 #endif
