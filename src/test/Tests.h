@@ -217,6 +217,19 @@ TEST_F(InitManager, ite) {
     EXPECT_EQ(manager->ite(6, 1, 7) , 9);
     EXPECT_EQ(manager->computed_table.size(), 4);
     EXPECT_EQ(manager->Table.size(),10);
+
+    std::cout << "Unique table \n";
+    for (auto it = manager->Table.cbegin(); it != manager->Table.cend(); ++it)
+    {
+        std::cout << "{" << (*it).first.TopVar << "|" << (*it).first.low << "|" << (*it).first.high << ": " << (*it).second.id << "}\n";
+    }
+
+
+    std::cout << "Computed table \n";
+    for (auto it = manager->computed_table.cbegin(); it != manager->computed_table.cend(); ++it)
+    {
+        std::cout << "{" << (*it).first.TopVar << "|" << (*it).first.low << "|" << (*it).first.high << ": " << (*it).second << "}\n";
+    }
 }
 
 /**
@@ -386,5 +399,25 @@ TEST_F(TestManager, xnor2) //ite(a, b, ~b)
     EXPECT_EQ(manager->xnor2(c, d), manager->ite(c, d, manager->neg(d)));
     EXPECT_EQ(manager->xnor2(cd, f), manager->ite(cd, f, manager->neg(f)));
 };
+
+TEST_F(TestManager, nand2) //ite(a, ~b, 1)
+{
+    EXPECT_EQ(manager->nand2(manager->False(), manager->False()), manager->True());
+    EXPECT_EQ(manager->nand2(manager->False(), manager->True()), manager->True());
+    EXPECT_EQ(manager->nand2(manager->True(), manager->False()), manager->True());
+    EXPECT_EQ(manager->nand2(manager->True(), manager->True()), manager->False());
+
+    EXPECT_EQ(manager->nand2(a, manager->False()), manager->True());
+    EXPECT_EQ(manager->nand2(a, manager->True()), manager->neg(a));
+    EXPECT_EQ(manager->nand2(manager->False(), a), manager->True());
+    EXPECT_EQ(manager->nand2(manager->True(), a), manager->neg(a));
+
+    ClassProject::BDD_ID  a_nand_b = manager->nand2(a, b);
+
+    EXPECT_EQ(manager->coFactorTrue(a_nand_b), manager->neg(b));
+    EXPECT_EQ(manager->coFactorFalse(a_nand_b), manager->True());
+    EXPECT_EQ(manager->topVar(a_nand_b), a);
+
+}
 
 #endif

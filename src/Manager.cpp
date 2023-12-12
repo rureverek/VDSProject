@@ -155,14 +155,14 @@ namespace ClassProject
             return t;
         }else if (i == False()){
             return e;
-        }else if (t == False()) {
-            return e;
+        //}else if (t == False()) {
+        //    return e;
         } else if (t == e) {
             return t;
         } else if (t == True() && e == False()){
             return i;
-        } else if (auto search = Table.find({i,t,e}); search != Table.end()){
-            return search->second.id;
+        } else if (auto search = computed_table.find({i,t,e}); search != computed_table.end()){
+            return search->second;
         }
 
         BDD_ID top_variable_t = isConstant(t) ? topVar(i) : std::min(topVar(i), topVar(t));
@@ -179,15 +179,15 @@ namespace ClassProject
             return f_low;
         }
 
-        if (auto search = computed_table.find({top_variable, f_low, f_high}); search != computed_table.end())
+        if (auto search = Table.find({top_variable,f_low,f_high}); search != Table.end())
         {
-            computed_table[{top_variable, f_low, f_high}] = search->second;
-            return search->second;
+            computed_table[{i,t,e}] = search->second.id;
+            return search->second.id;
         }
 
         BDD_ID p = Table.size();
 
-        computed_table.emplace(Unique_Table_Key({top_variable,f_low,f_high}),p);
+        computed_table.emplace(Unique_Table_Key({i,t,e}),p);
 
         Table.emplace(Unique_Table_Key({top_variable,f_low,f_high}),Unique_Table_Entry({std::to_string(p), p}));
 
@@ -360,7 +360,7 @@ namespace ClassProject
 
     BDD_ID Manager::nand2(BDD_ID a, BDD_ID b)
     {
-        return ite(a, 1, b);
+        return neg(and2(a, b));
     }
 
     /**
