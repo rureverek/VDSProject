@@ -360,7 +360,7 @@ namespace ClassProject
 
     BDD_ID Manager::nand2(BDD_ID a, BDD_ID b)
     {
-        return ite(a, 1, b);
+        return neg(and2(a, b));
     }
 
     /**
