@@ -274,7 +274,7 @@ TEST_F(InitManager, CoFactorFalse) {
     EXPECT_EQ(manager->coFactorFalse(ab,a), b); //Case: f.top == x ret f.low
 
     //Case: if else: ret ite(f_key.TopVar, T, F);
-    EXPECT_EQ(manager->coFactorFalse(ab,d), manager->ite(a, manager->coFactorFalse(b, d), manager->coFactorFalse(manager->True(),d)));
+    EXPECT_EQ(manager->coFactorFalse(ab,d), manager->ite(a, manager->coFactorFalse(manager->True(), a), manager->coFactorFalse(b,a)));
 
 }
 
