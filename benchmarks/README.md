@@ -1,6 +1,6 @@
 # Benchmarks
 
-This folder contains the main benchmarks used for the class project.
+This folder contains the main benchmarks used for the class project and model answers in ./results (which can be used as an argument for VDSProject_verify executable)
 
 ## Student Requirements
 
