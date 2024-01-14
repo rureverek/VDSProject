@@ -20,9 +20,11 @@ namespace ClassProject
     Manager::Manager()
     {
 
-        Table.emplace(Unique_Table_Key{0, 0, 0}, Unique_Table_Entry{"False", 0});
+        Table.emplace(Unique_Table_Key{0, 0, 0, "False"}, 0);
+        id_table.push_back(Unique_Table_Key{0, 0, 0});
 
-        Table.emplace(Unique_Table_Key{1, 1, 1}, Unique_Table_Entry{"True", 1});
+        Table.emplace(Unique_Table_Key{1, 1, 1, "True"}, 1);
+        id_table.push_back(Unique_Table_Key{1, 1, 1});
     }
 
     /**
@@ -43,13 +45,10 @@ namespace ClassProject
         key_Var.high = 1;
         key_Var.low = 0;
         key_Var.TopVar = ID;
+        key_Var.label = label;
 
-        Unique_Table_Entry entry_Var;
-
-        entry_Var.label = label;
-        entry_Var.id = ID;
-
-        Table.emplace(key_Var, entry_Var);
+        Table.emplace(key_Var, ID);
+        id_table.push_back(key_Var);
         return ID;
     };
 
@@ -86,21 +85,23 @@ namespace ClassProject
      */
     bool Manager::isConstant(BDD_ID f)
     {
-        for (auto &it : Table)
-        {
-            if (it.second.id == f)
-            {
-                if (it.first.low == it.first.high)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return (id_table[f].low == id_table[f].high); 
+        
+        // for (auto &it : Table)
+//         {
+            // if (it.second.id == f)
+            // {
+                // if (it.first.low == it.first.high)
+                // {
+                    // return true;
+                // }
+                // else
+                // {
+                    // return false;
+                // }
+            // }
+        // }
+        // return false;
     };
 
     /**
@@ -112,6 +113,8 @@ namespace ClassProject
      */
    bool Manager::isVariable( BDD_ID x) {
 
+        return (id_table[x].low == 0 && id_table[x].high == 1); 
+/*
        for (auto & it : Table) {
            if (it.second.id == x) {
                if (it.second.label.size() == 1 &&
@@ -122,7 +125,7 @@ namespace ClassProject
                }
            }
        }
-       return false;
+       return false;*/
    }
 
     /**
@@ -133,7 +136,8 @@ namespace ClassProject
       * @return returns the ID of the top variable.
       */
     BDD_ID Manager::topVar(BDD_ID f) {
-        if (isVariable(f) || isConstant(f)) {
+        return id_table[f].TopVar;
+        /*if (isVariable(f) || isConstant(f)) {
             return f;
         }
 
@@ -145,7 +149,7 @@ namespace ClassProject
                 }
             }
         }
-        return False(); //In case of failure.
+        return False(); //In case of failure.*/
     }
 
     BDD_ID Manager::ite(BDD_ID i, BDD_ID t, BDD_ID e)
@@ -178,15 +182,16 @@ namespace ClassProject
 
         if (auto search = Table.find({top_variable,f_low,f_high}); search != Table.end())
         {
-            computed_table[{i,t,e}] = search->second.id;
-            return search->second.id;
+            computed_table[{i,t,e}] = search->second;
+            return search->second;
         }
 
         BDD_ID p = Table.size();
 
         computed_table.emplace(Unique_Table_Key({i,t,e}),p);
 
-        Table.emplace(Unique_Table_Key({top_variable,f_low,f_high}),Unique_Table_Entry({std::to_string(p), p}));
+        Table.emplace(Unique_Table_Key({top_variable,f_low,f_high,std::to_string(p)}), p);
+        id_table.push_back(Unique_Table_Key({top_variable,f_low,f_high,std::to_string(p)}));
 
         return p;
     }
@@ -198,13 +203,15 @@ namespace ClassProject
         Unique_Table_Key f_key;
 
         /* Find Key of f, which is used later */
-        for(auto &it : Table)
+        /*for(auto &it : Table)
         {
             if(it.second.id == f)
             {
                 f_key = it.first;
             }
-        }
+        }*/
+
+        f_key = id_table.at(f);
 
         /* Terminal cases */
         if(isConstant(f) || isConstant(x) || f_key.TopVar > x)
@@ -234,13 +241,15 @@ namespace ClassProject
         Unique_Table_Key f_key;
 
         /* Find Key of f, which is used later */
-        for(auto &it : Table)
+        /*for(auto &it : Table)
         {
             if(it.second.id == f)
             {
                 f_key = it.first;
             }
-        }
+        }*/
+
+        f_key = id_table.at(f);
 
         /* Terminal cases */
         if(isConstant(f) || isConstant(x) || f_key.TopVar > x)
@@ -273,7 +282,10 @@ namespace ClassProject
     */
     std::string Manager::getTopVarName(const BDD_ID &root) {
         BDD_ID temp;
-        for (auto &it: Table) {
+
+        return id_table[topVar(root)].label;
+
+/*      for (auto &it: Table) {
             if (it.second.id == root) {
                 temp = it.first.TopVar;
             }
@@ -283,7 +295,7 @@ namespace ClassProject
                 return it.second.label;
             }
         }
-        return ""; //It should never reach here...
+        return ""; //It should never reach here...*/
     }
 
 
@@ -420,13 +432,16 @@ namespace ClassProject
         {
             Unique_Table_Key key;
 
-            for(auto &j : Table)
+
+            key = id_table.at(i);
+
+            /*for(auto &j : Table)
             {
                 if(j.second.id == i)
                 {
                     key = j.first;
                 }
-            }
+            }*/
 
             if(isConstant(i))
             {

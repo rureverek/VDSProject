@@ -8,6 +8,7 @@
 #include "ManagerInterface.h"
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 namespace ClassProject
 {
@@ -27,6 +28,7 @@ namespace ClassProject
             BDD_ID TopVar;
             BDD_ID low;
             BDD_ID high;
+            std::string label;
 
             bool operator==(const Unique_Table_Key &other) const
             {
@@ -39,11 +41,11 @@ namespace ClassProject
          * Defines a structure to be used as a value in the hash map
          *
          */
-        struct Unique_Table_Entry
+        /* struct Unique_Table_Entry
         {
             std::string label;
             BDD_ID id;
-        };
+        }; */
 
         /**
          * @brief KeyHash
@@ -60,7 +62,8 @@ namespace ClassProject
             }
         };
 
-        std::unordered_map<Unique_Table_Key, Unique_Table_Entry, KeyHash> Table;
+        std::unordered_map<Unique_Table_Key, BDD_ID, KeyHash> Table;
+        std::vector<Unique_Table_Key> id_table;
         std::unordered_map<Unique_Table_Key,BDD_ID,KeyHash> computed_table;
 
         BDD_ID createVar(const std::string &label) override;
