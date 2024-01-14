@@ -80,10 +80,10 @@ TEST_F(InitManager, InitTableEntries)
 {
     ClassProject::Manager::Unique_Table_Key key = {0, 0, 0};
 
-    EXPECT_EQ(manager->Table[key].id, 0);
+    EXPECT_EQ(manager->Table[key], 0);
 
     key = {1, 1, 1};
-    EXPECT_EQ(manager->Table[key].id, 1);
+    EXPECT_EQ(manager->Table[key], 1);
 }
 
 /**
@@ -230,7 +230,7 @@ TEST_F(InitManager, ite) {
     std::cout << "Unique table \n";
     for (auto it = manager->Table.cbegin(); it != manager->Table.cend(); ++it)
     {
-        std::cout << "{" << (*it).first.TopVar << "|" << (*it).first.low << "|" << (*it).first.high << ": " << (*it).second.id << "}\n";
+        std::cout << "{" << (*it).first.TopVar << "|" << (*it).first.low << "|" << (*it).first.high << ": " << (*it).second << "}\n";
     }
 
 

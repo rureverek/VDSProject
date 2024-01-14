@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
     /* Print Table */
     for(auto [key, value] : manager.Table){
-        std::cout<<value.id<<":"<<key.high<<","<<key.low<<","<<key.TopVar<<std::endl;
+        std::cout<<value<<":"<<key.high<<","<<key.low<<","<<key.TopVar<<std::endl;
     }
 
     /* Print graph */
