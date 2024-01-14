@@ -21,10 +21,10 @@ namespace ClassProject
     {
 
         Table.emplace(Unique_Table_Key{0, 0, 0, "False"}, 0);
-        id_table.push_back(Unique_Table_Key{0, 0, 0});
+        id_table.push_back(Unique_Table_Key{0, 0, 0, "False"});
 
         Table.emplace(Unique_Table_Key{1, 1, 1, "True"}, 1);
-        id_table.push_back(Unique_Table_Key{1, 1, 1});
+        id_table.push_back(Unique_Table_Key{1, 1, 1, "True"});
     }
 
     /**
