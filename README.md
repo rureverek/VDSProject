@@ -122,12 +122,6 @@ Use the `BLANK_README.md` to get started.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
-
-
-
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
 Fork this repository and follow the instructions given in doc/ to complete the project.
@@ -141,16 +135,8 @@ List of Ubuntu packages required to complete the project:
 * git-all
 * libboost-all-dev
 * build-essential
+* graphviz, libgraphviz-dev for visualise function
 
-
-_No guarantee that this list is complete (Add other packages to the README)_
-<!--
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
--->
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Installation
@@ -179,6 +165,18 @@ CLion comes with CMake.
     ```sh
     make
     ```   
+5. To run benchmark run VDSProject_bench executable:
+    ```sh
+    cd ..
+    ./build/src/bench/VDSProject_bench ./benchmarks/iscas85/<benchmark_name>.bench
+
+    ```
+6. To verify result run VDSProject_verify executable with two arguments: model answer located in ./benchmarks folder and generated answer located in new ./results folder:
+    ```sh
+    ./build/src/verify/VDSProject_verify ./benchmarks/results/<benchmark_name>/txt/<graph_name>.txt ./results/<benchmark_name>/txt/<graph_name>.txt
+
+
+    ```
 <!--
 _Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
@@ -206,15 +204,15 @@ _Below is an example of how you can instruct your audience on installing and set
 #### Part-1
 - [X] Set up and maintain a Git repository
 - [X] Use CMake as a build system of the project
-- [ ] Verify the code using GTest
+- [X] Verify the code using GTest
 - [X] Set up a Continuous Integration (CI) pipeline with GitHub Actions (Mandatory)
-- [ ] Use Doxygen (or a similar tool) to generate documentation for the API. (Optional)
+- [X] Use Doxygen (or a similar tool) to generate documentation for the API. (Optional)
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 #### Part-2
-- [ ] learning how to identify performance bottlenecks within the code.
-- [ ] Analyzing benchmark results.
-- [ ] How to overcome bottlenecks.
+- [X] learning how to identify performance bottlenecks within the code.
+- [X] Analyzing benchmark results.
+- [X] How to overcome bottlenecks.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 #### Part-3
