@@ -20,11 +20,11 @@ namespace ClassProject
     Manager::Manager()
     {
 
-        Table.emplace(Unique_Table_Key{0, 0, 0, "False"}, 0);
-        id_table.push_back(Unique_Table_Key{0, 0, 0, "False"});
+        Table.emplace(Unique_Table_Key{0, 0, 0}, 0);
+        id_table.push_back(Node{0, 0, 0, "False"});
 
-        Table.emplace(Unique_Table_Key{1, 1, 1, "True"}, 1);
-        id_table.push_back(Unique_Table_Key{1, 1, 1, "True"});
+        Table.emplace(Unique_Table_Key{1, 1, 1}, 1);
+        id_table.push_back(Node{1, 1, 1, "True"});
     }
 
     /**
@@ -45,10 +45,9 @@ namespace ClassProject
         key_Var.high = 1;
         key_Var.low = 0;
         key_Var.TopVar = ID;
-        key_Var.label = label;
 
         Table.emplace(key_Var, ID);
-        id_table.push_back(key_Var);
+        id_table.push_back(Node{key_Var.TopVar, key_Var.low, key_Var.high, label});
         return ID;
     };
 
@@ -190,8 +189,8 @@ namespace ClassProject
 
         computed_table.emplace(Unique_Table_Key({i,t,e}),p);
 
-        Table.emplace(Unique_Table_Key({top_variable,f_low,f_high,std::to_string(p)}), p);
-        id_table.push_back(Unique_Table_Key({top_variable,f_low,f_high,std::to_string(p)}));
+        Table.emplace(Unique_Table_Key({top_variable,f_low,f_high}), p);
+        id_table.push_back(Node({top_variable,f_low,f_high,std::to_string(p)}));
 
         return p;
     }
@@ -200,7 +199,7 @@ namespace ClassProject
     BDD_ID Manager::coFactorTrue(BDD_ID f, BDD_ID x)
     {
         BDD_ID T, F;
-        Unique_Table_Key f_key;
+        Node f_key;
 
         /* Find Key of f, which is used later */
         /*for(auto &it : Table)
@@ -238,7 +237,7 @@ namespace ClassProject
     BDD_ID Manager::coFactorFalse(BDD_ID f, BDD_ID x)
     {
         BDD_ID T, F;
-        Unique_Table_Key f_key;
+        Node f_key;
 
         /* Find Key of f, which is used later */
         /*for(auto &it : Table)
@@ -430,7 +429,7 @@ namespace ClassProject
 
         for(auto i : set)
         {
-            Unique_Table_Key key;
+            Node key;
 
 
             key = id_table.at(i);
