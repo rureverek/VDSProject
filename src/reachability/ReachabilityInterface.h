@@ -17,6 +17,8 @@ namespace ClassProject {
         ReachabilityInterface() = default;
         virtual ~ReachabilityInterface() = default;
 
+        // Constructor with single argument is delegated into other constructor with inputSize default to zero
+        explicit ReachabilityInterface(unsigned int stateSize) : ReachabilityInterface(stateSize, 0) {};
         /**
          * The constructor initializes a default state machine with the given number of variables.
          * All state variables should be created within the constructor.
