@@ -14,7 +14,7 @@ namespace ClassProject {
     class ReachabilityInterface : public Manager {
     public:
 
-        ReachabilityInterface() = default;
+        ReachabilityInterface() = delete;
         virtual ~ReachabilityInterface() = default;
 
         // Constructor with single argument is delegated into other constructor with inputSize default to zero
