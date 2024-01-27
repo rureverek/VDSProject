@@ -45,19 +45,16 @@ using namespace ClassProject;
     */
     void Reachability::setInitState(const std::vector<bool> &stateVector) {
 
-        if (stateVector.size() != stateSize)
+        if (stateVector.size() != 2)
         {
             throw std::runtime_error("Size of stateVector does not match the number of state bits.");
         }
 
-        std::vector<int> intStateVector;
-
-        for (bool stateBit : stateVector)
+        for (size_t i = 0; i < stateVector.size(); ++i)
         {
-            intStateVector.push_back(stateBit ? 1 : 0);
+              initial_states[i] = stateVector[i]  ? 1 : 0 ;
         }
-        // Set the currentState to the converted stateVector
-        initial_states = intStateVector;
+
     };
 
     int Reachability::stateDistance(const std::vector<bool> &stateVector) {
