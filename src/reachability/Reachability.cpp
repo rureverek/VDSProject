@@ -27,10 +27,15 @@ using namespace ClassProject;
 
 
 
-    const std::vector<BDD_ID> &Reachability::getStates(){
+    const std::vector<BDD_ID> &Reachability::getStates() const{
         return current_states;
     };
 
-    const std::vector<BDD_ID> &Reachability::getInputs(){
+    const std::vector<BDD_ID> &Reachability::getInputs() const{
         return next_states;
     };
+
+
+    bool Reachability::isReachable(const std::vector<bool> &stateVector) {};
+    void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {};
+    void Reachability::setInitState(const std::vector<bool> &stateVector) {};
