@@ -18,7 +18,7 @@ namespace ClassProject {
         virtual ~ReachabilityInterface() = default;
 
         // Constructor with single argument is delegated into other constructor with inputSize default to zero
-        explicit ReachabilityInterface(unsigned int stateSize) : ReachabilityInterface(stateSize, 0) {};
+        // explicit ReachabilityInterface(unsigned int stateSize) : ReachabilityInterface(stateSize, 0) {};
         /**
          * The constructor initializes a default state machine with the given number of variables.
          * All state variables should be created within the constructor.
@@ -30,40 +30,21 @@ namespace ClassProject {
          * @param inputSize number of boolean input bits, defaults to zero
          * @throws std::runtime_error if stateSize is zero
          */
-        explicit ReachabilityInterface(unsigned int stateSize, unsigned int inputSize) {
-
-            try
-            {
-                if(stateSize == 0)
-                {
-                    throw std::runtime_error("ReachabilityInterface(): stateSize = 0");
-                }
-                for(int i = 0; i < stateSize; i++)
-                {
-                    std::string label = "s";
-                    label.append(std::to_string(i));
-                    Manager::createVar(label);
-                }
-            }
-            catch(std::exception const& e)
-            {
-                std::cout << "Exception: " << e.what() << "\n";
-            }
-        };
+        explicit ReachabilityInterface(unsigned int stateSize, unsigned int inputSize) {};
 
         /**
          * Returns a vector containing all state bits of the state machine.
          *
          * @returns vector with the BDD_ID of each state bit
          */
-//        virtual const std::vector<BDD_ID> &getStates() const = 0;
+        virtual const std::vector<BDD_ID> &getStates() const = 0;
 
         /**
          * Returns a vector containing all input bits of the state machine.
          *
          * @returns vector with the BDD_ID of each input bit
          */
-//        virtual const std::vector<BDD_ID> &getInputs() const = 0;
+        virtual const std::vector<BDD_ID> &getInputs() const = 0;
 
         /**
          * This function computes whether a specific state is in the reachable state space or not.
@@ -73,7 +54,7 @@ namespace ClassProject {
          * @returns true, if the given state is in the reachable state set
          * @throws std::runtime_error if size does not match with number of state bits
          */
-//        virtual bool isReachable(const std::vector<bool> &stateVector) = 0;
+        virtual bool isReachable(const std::vector<bool> &stateVector) = 0;
 
          /**
           * This function computes the distance from the initial state to a specified state.
@@ -97,7 +78,7 @@ namespace ClassProject {
           * @return the shortest distance to the initial state, -1 if unreachable
 	  * @throws std::runtime_error if size does not match with number of state bits
           */
-//        virtual int stateDistance(const std::vector<bool> &stateVector) = 0;
+        virtual int stateDistance(const std::vector<bool> &stateVector) = 0;
 
         /**
          * Each state variable has a transition function.
@@ -114,7 +95,7 @@ namespace ClassProject {
          * @param transitionFunctions provide a transition function exactly for each state bit
          * @throws std::runtime_error
          */
-//        virtual void setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) = 0;
+        virtual void setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) = 0;
 
         /**
          * Provides an initial state for the system as a vector of boolean values.
@@ -124,7 +105,7 @@ namespace ClassProject {
          * @param stateVector provides the assignment for each state bit
          * @throws std::runtime_error if size does not match with number of state bits
          */
-//        virtual void setInitState(const std::vector<bool> &stateVector) = 0;
+        virtual void setInitState(const std::vector<bool> &stateVector) = 0;
 
     };
 
