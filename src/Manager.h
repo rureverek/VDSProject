@@ -18,6 +18,14 @@ namespace ClassProject
     public:
         Manager();
 
+        struct Node
+        {
+            BDD_ID TopVar;
+            BDD_ID low;
+            BDD_ID high;
+            std::string label;
+        };
+
         /**
          * @brief Unique_Table_Key
          * Defines a structure to be used as a key in the hash map
@@ -28,7 +36,6 @@ namespace ClassProject
             BDD_ID TopVar;
             BDD_ID low;
             BDD_ID high;
-            std::string label;
 
             bool operator==(const Unique_Table_Key &other) const
             {
@@ -41,11 +48,10 @@ namespace ClassProject
          * Defines a structure to be used as a value in the hash map
          *
          */
-        /* struct Unique_Table_Entry
+        /*struct Unique_Table_Entry
         {
-            std::string label;
             BDD_ID id;
-        }; */
+        };*/
 
         /**
          * @brief KeyHash
@@ -63,7 +69,7 @@ namespace ClassProject
         };
 
         std::unordered_map<Unique_Table_Key, BDD_ID, KeyHash> Table;
-        std::vector<Unique_Table_Key> id_table;
+        std::vector<Node> id_table;
         std::unordered_map<Unique_Table_Key,BDD_ID,KeyHash> computed_table;
 
         BDD_ID createVar(const std::string &label) override;
