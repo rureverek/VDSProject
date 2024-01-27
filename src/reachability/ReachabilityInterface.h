@@ -7,8 +7,6 @@
 #define VDSPROJECT_REACHABILITYINTERFACE_H
 
 #include "../Manager.h"
-#include <stdexcept>
-#include <iostream>
 
 namespace ClassProject {
     class ReachabilityInterface : public Manager {
@@ -17,8 +15,6 @@ namespace ClassProject {
         ReachabilityInterface() = delete;
         virtual ~ReachabilityInterface() = default;
 
-        // Constructor with single argument is delegated into other constructor with inputSize default to zero
-        // explicit ReachabilityInterface(unsigned int stateSize) : ReachabilityInterface(stateSize, 0) {};
         /**
          * The constructor initializes a default state machine with the given number of variables.
          * All state variables should be created within the constructor.
