@@ -15,7 +15,8 @@ namespace ClassProject {
     bool isReachable(const std::vector<bool> &stateVector) override;
     void setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) override;
     void setInitState(const std::vector<bool> &stateVector) override;
-
+    int stateDistance(const std::vector<bool> &stateVector) override;
+    
     private:
 
     std::vector<BDD_ID> current_states;
