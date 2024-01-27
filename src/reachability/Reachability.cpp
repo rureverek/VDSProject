@@ -1,4 +1,6 @@
 #include "Reachability.h"
+#include <stdexcept>
+#include <iostream>
 
 using namespace ClassProject;
 
@@ -21,21 +23,18 @@ using namespace ClassProject;
             {
                 std::cout << "Exception: " << e.what() << "\n";
             }
-        };
-
-
-
-
-
+        }
     const std::vector<BDD_ID> &Reachability::getStates() const{
         return current_states;
-    };
-
+    }
     const std::vector<BDD_ID> &Reachability::getInputs() const{
         return next_states;
-    };
-
-
-    bool Reachability::isReachable(const std::vector<bool> &stateVector) {};
+    }
+    bool Reachability::isReachable(const std::vector<bool> &stateVector) {
+        return false;
+    }
     void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {};
-    void Reachability::setInitState(const std::vector<bool> &stateVector) {};
+    void Reachability::setInitState(const std::vector<bool> &stateVector) {}
+    int Reachability::stateDistance(const std::vector<bool> &stateVector) {
+    return 0;
+}
