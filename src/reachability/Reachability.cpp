@@ -40,8 +40,30 @@ using namespace ClassProject;
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
         return false;
     }
-    void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {}
-    void Reachability::setInitState(const std::vector<bool> &stateVector) {}
+    void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {};
+
+/**
+    * Provides an initial state for the system as a vector of boolean values.
+    * If the entry is true, the state bit is high. Otherwise, the bit is low.
+    * E.g. initial state not(s0) and not(s1) is transformed into {false,false}.
+    *
+    * @param stateVector provides the assignment for each state bit
+    * @throws std::runtime_error if size does not match with number of state bits
+    */
+    void Reachability::setInitState(const std::vector<bool> &stateVector) {
+
+        if (stateVector.size() != 2)
+        {
+            throw std::runtime_error("Size of stateVector does not match the number of state bits.");
+        }
+
+        for (size_t i = 0; i < stateVector.size(); ++i)
+        {
+              initial_states[i] = stateVector[i]  ? 1 : 0 ;
+        }
+
+    };
+
     int Reachability::stateDistance(const std::vector<bool> &stateVector) {
     return 0;
 }
