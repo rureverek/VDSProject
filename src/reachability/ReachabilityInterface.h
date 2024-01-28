@@ -104,6 +104,7 @@ namespace ClassProject {
         virtual void setInitState(const std::vector<bool> &stateVector) = 0;
 
     };
+
 }
 
 
