@@ -40,7 +40,53 @@ using namespace ClassProject;
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
         return false;
     }
-    void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {};
+
+
+/**
+     * Each state variable has a transition function.
+     * The transition function specifies the value of the state after the transition.
+     * The transition functions can be composed of state variables and inputs if present.
+     * Example: s0' = s0 XOR s1
+     * Example: s1' = (s1 AND s0) OR i0
+     * The next state for s0 is defined as XOR of the current values of the state bit s0 and s1
+     * The next state for s1 is defined as the AND of the current values of s1 and s0 ORed with input i0
+     * An exception is thrown, if
+     *  - The number of given transition functions does not match the number of state bits
+     *  - An unknown ID is provided
+     *
+     * @param transitionFunctions provide a transition function exactly for each state bit
+     * @throws std::runtime_error
+     */
+    void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {
+
+        try
+        {
+            if (transitionFunctions.size() != initial_states.size())
+            {
+                throw std::runtime_error("The number of transition functions does not match the number of state bits");
+            }
+
+            for (size_t i = 0; i < transitionFunctions.size(); ++i)
+            {
+                for (const auto &id: current_states)
+                {
+                    if (id != transitionFunctions[i])
+                    {
+                        throw std::runtime_error("An unknown ID is provided")
+                    }
+                }
+            }
+
+            tau[0] = Manager::xor2(current_states[0], current_states[1]); // s0' = s0 xor s1
+            tau[1] = Manager::or2(Manage::and2(current_states[0], current_states[1]), inputs[0]); // s1' = (s1 AND s0) OR i0
+        }
+        catch(std::exception const& e)
+        {
+            std::cout << "Exception: " << e.what() << "\n";
+        }
+    };
+
+
 
 /**
     * Provides an initial state for the system as a vector of boolean values.
