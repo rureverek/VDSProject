@@ -109,7 +109,7 @@ using namespace ClassProject;
             c_s = Manager::xnor2(current_states[0], initial_states[0]);
             for (size_t i = 1; i < stateVector.size(); ++i)
             {
-                c_s = Manager::and2(c_s, Manager::xnor2(current_states[i], next_states[i]));
+                c_s = Manager::and2(c_s, Manager::xnor2(current_states[i], initial_states[i]));
             }
         }
         catch(std::exception const& e)
