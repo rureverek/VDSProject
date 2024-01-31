@@ -19,11 +19,10 @@ using namespace ClassProject;
                     BDD_ID id = Manager::createVar(label); //Create state variables
                     current_states.push_back(id);
                     initial_states.push_back(false); //Set initial state to false
-                    if(inputSize == 0) //Set next state to be current state if no input variables
+                    if(inputSize == 0) //Set next state to be current state if no input variables (identity function)
                     {
                         next_states.push_back(id);
                     }
-                    tran_func.push_back(Manager::True()); //Identity function by default
                 }
             }
             catch(std::exception const& e)
@@ -65,20 +64,16 @@ using namespace ClassProject;
             {
                 throw std::runtime_error("The number of transition functions does not match the number of state bits");
             }
+            //Set transition function
+            next_states = transitionFunctions;
 
-            for (size_t i = 0; i < transitionFunctions.size(); ++i)
+            //Calculate charateristic transition relation
+            //Tau = (current_state[0] xnor next_state[0]) and (current_state [1] xnor next_state[1]) and ... [i]
+            tau = Manager::xnor2(current_states[0], next_states[0]);
+            for (size_t i = 1; i < transitionFunctions.size(); ++i)
             {
-                for (const auto &id: current_states)
-                {
-                    if (id != transitionFunctions[i])
-                    {
-                        throw std::runtime_error("An unknown ID is provided")
-                    }
-                }
+                tau = Manager::and2(tau, Manager::xnor2(current_states[i], next_states[i]));
             }
-
-            tau[0] = Manager::xor2(current_states[0], current_states[1]); // s0' = s0 xor s1
-            tau[1] = Manager::or2(Manage::and2(current_states[0], current_states[1]), inputs[0]); // s1' = (s1 AND s0) OR i0
         }
         catch(std::exception const& e)
         {
