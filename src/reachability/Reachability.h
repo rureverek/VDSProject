@@ -22,9 +22,10 @@ namespace ClassProject {
 
     std::vector<BDD_ID> current_states;
     std::vector<BDD_ID> next_states;
+    std::vector<BDD_ID> delta;
     BDD_ID tau;     //characteristic function of transition relation - tau
     std::vector<BDD_ID> inputs;     //fsm inputs
-    std::vector<bool> initial_states;
+    std::vector<BDD_ID> initial_states;
     BDD_ID c_s;     //characteristic function of the initial state - c_s
 
     };
