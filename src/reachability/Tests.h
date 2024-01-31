@@ -23,7 +23,7 @@ using namespace ClassProject;
      transitionFunctions.push_back(fsm2->neg(s0)); // s0' = not(s0)
      transitionFunctions.push_back(fsm2->neg(s1)); // s1' = not(s1)
 
-     /* Compute BDD for trasition function */
+     /* Compute BDD for transition function */
      fsm2->setTransitionFunctions(transitionFunctions);
 
      /* Compute BDD for characteristic function of the initial state */
