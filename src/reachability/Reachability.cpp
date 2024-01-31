@@ -140,14 +140,21 @@ using namespace ClassProject;
                 c_r = c_r_it;
 
                 /* imgR(s') := ∃x∃scR(s) ⋅τ(s, x, s'); */
-                temp1 = Manager::and2(c_r, tau);
-                temp2 = Manager::or2(Manager::coFactorTrue(temp1, current_state[1]), Manager::coFactorFalse(temp1, current_state[1]));
-                img_ = Manager::or2(Manager::coFactorTrue(temp2, current_state[0]), Manager::coFactorFalse(temp2, current_state[0]));
+                img_ = Manager::and2(c_r, tau);
+                temp1 = True();
+                for(int i = 0; i < stateVector.size(); i++)
+                {
+                    img_ = Manager::or2(Manager::coFactorTrue(img_, current_state[i]), Manager::coFactorFalse(img_, current_state[i]));
+                    temp1 = Manager::and2(Manager::xnor2(current_state[i], next_states[i]), temp1);
+                }
 
                 /* form imgR(s) by renaming of variables s'into s; */
-                temp1 = Manager::and2(Manager::and2(Manager::xnor2(current_state[0], next_states[0]), Manager::xnor2(current_state[1], next_states[1])), img_);
-                temp2 = Manager::or2(Manager::coFactorTrue(temp1, next_states[1]), Manager::coFactorFalse(temp1, next_states[1]));
-                img_ = Manager::or2(Manager::coFactorTrue(temp2, next_states[0]), Manager::coFactorFalse(temp2, next_states[0]));
+                
+                img_ = Manager::and2(temp1, img_);
+                for(int i = 0; i < stateVector.size(); i++)
+                {
+                    img_ = Manager::or2(Manager::coFactorTrue(img_, next_states[i]), Manager::coFactorFalse(img_, next_states[i]));
+                }
 
                 /* cR_it(s) := cR(s) + imgR(s); */
                 c_r_it = Manager::or2(c_r, img_);
