@@ -127,6 +127,15 @@ using namespace ClassProject;
         std::vector<BDD_ID> current_state = current_states;
         BDD_ID c_r_it = c_s; //c_r_it = c_s
         BDD_ID c_r;
+
+        /* Calculate characteristic function for state we are looking for */
+        BDD_ID looking = Manager::xnor2(current_states[0], stateVector[0]);
+        for (size_t i = 1; i < stateVector.size(); ++i)
+        {
+            looking = Manager::and2(looking, Manager::xnor2(current_states[i], stateVector[i]));
+        }
+        if(looking == c_s)return 0;
+        int cnt = 1;
         try
         {
             if (stateVector.size() != current_state.size())
@@ -138,7 +147,6 @@ using namespace ClassProject;
                 BDD_ID temp1, temp2, img_;
                 /* cR(s) := cR_it(s); */
                 c_r = c_r_it;
-
                 /* imgR(s') := ∃x∃scR(s) ⋅τ(s, x, s'); */
                 img_ = Manager::and2(c_r, tau);
                 temp1 = True();
@@ -155,13 +163,19 @@ using namespace ClassProject;
                 {
                     img_ = Manager::or2(Manager::coFactorTrue(img_, next_states[i]), Manager::coFactorFalse(img_, next_states[i]));
                 }
-
+                std::cout << "Img = C_r + img_ ("<<c_r<<" + "<<img_<<")"<<std::endl;
                 /* cR_it(s) := cR(s) + imgR(s); */
                 c_r_it = Manager::or2(c_r, img_);
+                if(img_ == looking)
+                {
+                    return cnt;
+                }
+                cnt++;
             } while (c_r != c_r_it);
 
             std::cout << "All reachable states: "<<c_r;
             //visualizeBDD("./", c_r);
+            return -1;
         }
         catch(std::exception const& e)
         {
