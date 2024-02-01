@@ -37,7 +37,38 @@ using namespace ClassProject;
         return next_states;
     }
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
-        return false;
+        
+        if( current_states.size() != stateVector.size() ){
+            throw std::runtime_error("isReachible: size does not match with number of state bits");
+        }
+
+        BDD_ID temp1, temp2, img, CR_it, CR, Reachable;
+        CR_it = c_s;
+        CR = c_s;
+        Reachable = CR;
+
+        do
+        {
+            temp1 = and2(CR, tau);
+            //for (size_t i = 0; i < ; i++)
+            for(auto & current_state : current_states)
+            {
+                temp2 = or2(coFactorTrue(temp1,current_state),coFactorFalse(temp1,current_state)); 
+            }
+
+            for(auto & next_state : next_states)
+            {
+                img = or2(coFactorTrue(temp2,next_state),coFactorFalse(temp2,next_state));
+            }
+
+            CR_it = or2(CR, img);
+        }
+        while (CR_it != CR );
+
+        for(size_t i = 0; i < stateVector.size(); ++i){
+            stateVector[i] == 0 ? Reachable = coFactorTrue(Reachable,current_states[i]) : Reachable = coFactorFalse(Reachable, current_states[i]);
+        }    
+        return Reachable == 1;
     }
 
 
