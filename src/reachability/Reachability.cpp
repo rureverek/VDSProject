@@ -19,10 +19,14 @@ using namespace ClassProject;
                     BDD_ID id = Manager::createVar(label); //Create state variables
                     current_states.push_back(id);
                     initial_states.push_back(false); //Set initial state to false
-                    if(inputSize == 0) //Set next state to be current state if no input variables (identity function)
-                    {
-                        next_states.push_back(id);
-                    }
+                }
+                for(int i = 0; i < stateSize; i++)
+                {
+                    std::string label = "s";
+                    label.append(std::to_string(i)); //Give label names: s0, s1, s2 ...
+                    label.append("'");
+                    BDD_ID id = Manager::createVar(label); //Create next state variables
+                    next_states.push_back(id);
                 }
             }
             catch(std::exception const& e)
@@ -65,14 +69,14 @@ using namespace ClassProject;
                 throw std::runtime_error("The number of transition functions does not match the number of state bits");
             }
             //Set transition function
-            next_states = transitionFunctions;
+            delta = transitionFunctions;
 
             //Calculate charateristic transition relation
             //Tau = (current_state[0] xnor next_state[0]) and (current_state [1] xnor next_state[1]) and ... [i]
-            tau = Manager::xnor2(current_states[0], next_states[0]);
+            tau = Manager::xnor2(delta[0], next_states[0]);
             for (size_t i = 1; i < transitionFunctions.size(); ++i)
             {
-                tau = Manager::and2(tau, Manager::xnor2(current_states[i], next_states[i]));
+                tau = Manager::and2(tau, Manager::xnor2(delta[i], next_states[i]));
             }
         }
         catch(std::exception const& e)
@@ -102,7 +106,7 @@ using namespace ClassProject;
 
             for (size_t i = 0; i < stateVector.size(); ++i)
             {
-                initial_states[i] = stateVector[i];
+                initial_states[i] = stateVector[i] ? True() : False();
             }
             //Calculate characteristic function of the initial_state
             //c_s = (current_state[0] xnor initial_state[0]) and (current_state [1] xnor initial_state[1]) and ... [i]
@@ -119,5 +123,63 @@ using namespace ClassProject;
     };
 
     int Reachability::stateDistance(const std::vector<bool> &stateVector) {
-    return 0;
-}
+
+        std::vector<BDD_ID> current_state = current_states;
+        BDD_ID c_r_it = c_s; //c_r_it = c_s
+        BDD_ID c_r;
+
+        /* Calculate characteristic function for state we are looking for */
+        BDD_ID looking = Manager::xnor2(current_states[0], stateVector[0]);
+        for (size_t i = 1; i < stateVector.size(); ++i)
+        {
+            looking = Manager::and2(looking, Manager::xnor2(current_states[i], stateVector[i]));
+        }
+        if(looking == c_s)return 0;
+        int cnt = 1;
+        try
+        {
+            if (stateVector.size() != current_state.size())
+            {
+                throw std::runtime_error("Size of stateVector does not match the number of state bits.");
+            }
+
+            do {
+                BDD_ID temp1, temp2, img_;
+                /* cR(s) := cR_it(s); */
+                c_r = c_r_it;
+                /* imgR(s') := ∃x∃scR(s) ⋅τ(s, x, s'); */
+                img_ = Manager::and2(c_r, tau);
+                temp1 = True();
+                for(int i = 0; i < stateVector.size(); i++)
+                {
+                    img_ = Manager::or2(Manager::coFactorTrue(img_, current_state[i]), Manager::coFactorFalse(img_, current_state[i]));
+                    temp1 = Manager::and2(Manager::xnor2(current_state[i], next_states[i]), temp1);
+                }
+
+                /* form imgR(s) by renaming of variables s'into s; */
+                
+                img_ = Manager::and2(temp1, img_);
+                for(int i = 0; i < stateVector.size(); i++)
+                {
+                    img_ = Manager::or2(Manager::coFactorTrue(img_, next_states[i]), Manager::coFactorFalse(img_, next_states[i]));
+                }
+                std::cout << "Img = C_r + img_ ("<<c_r<<" + "<<img_<<")"<<std::endl;
+                /* cR_it(s) := cR(s) + imgR(s); */
+                c_r_it = Manager::or2(c_r, img_);
+                if(img_ == looking)
+                {
+                    return cnt;
+                }
+                cnt++;
+            } while (c_r != c_r_it);
+
+            std::cout << "All reachable states: "<<c_r;
+            //visualizeBDD("./", c_r);
+            return -1;
+        }
+        catch(std::exception const& e)
+        {
+            std::cout << "Exception: " << e.what() << "\n";
+        }
+        return 0;
+    }
