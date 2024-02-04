@@ -53,10 +53,8 @@ using namespace ClassProject;
             // step 7
             img = and2(CR, tau); 
             for(auto & current_state : current_states)
-            // for(int i = current_states.size() - 1 ; i >= 0 ; i--)
             {
                 img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state)); 
-                // img = or2(coFactorTrue(img,current_states[i]),coFactorFalse(img,current_states[i])); 
             } 
             
             // step 8
@@ -66,10 +64,8 @@ using namespace ClassProject;
             }
 
             for(auto & next_state : next_states)
-            // for(int i = next_states.size() - 1 ; i >= 0 ; i--)
             {
                 img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
-                // img = or2(coFactorTrue(img,next_states[i]),coFactorFalse(img,next_states[i]));
             }
             
             // step 9
