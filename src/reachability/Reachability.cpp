@@ -34,7 +34,7 @@ using namespace ClassProject;
         return current_states;
     }
     const std::vector<BDD_ID> &Reachability::getInputs() const{
-        return next_states;
+        return inputs;
     }
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
         
@@ -42,33 +42,48 @@ using namespace ClassProject;
             throw std::runtime_error("isReachible: size does not match with number of state bits");
         }
 
-        BDD_ID temp1, temp2, img, CR_it, CR, Reachable;
+        BDD_ID img, CR_it, CR, reachable;
+        // step 5
         CR_it = c_s;
-        CR = c_s;
-        Reachable = CR;
 
         do
         {
-            temp1 = and2(CR, tau);
-            //for (size_t i = 0; i < ; i++)
+            // step 6
+            CR = CR_it; 
+            // step 7
+            img = and2(CR, tau); 
             for(auto & current_state : current_states)
+            // for(int i = current_states.size() - 1 ; i >= 0 ; i--)
             {
-                temp2 = or2(coFactorTrue(temp1,current_state),coFactorFalse(temp1,current_state)); 
+                img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state)); 
+                // img = or2(coFactorTrue(img,current_states[i]),coFactorFalse(img,current_states[i])); 
+            } 
+            
+            // step 8
+            for(int i = 0; i < current_states.size(); i++)
+            {
+                img = and2(img, xnor2(current_states[i],next_states[i]));
             }
 
             for(auto & next_state : next_states)
+            // for(int i = next_states.size() - 1 ; i >= 0 ; i--)
             {
-                img = or2(coFactorTrue(temp2,next_state),coFactorFalse(temp2,next_state));
+                img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
+                // img = or2(coFactorTrue(img,next_states[i]),coFactorFalse(img,next_states[i]));
             }
-
+            
+            // step 9
             CR_it = or2(CR, img);
         }
-        while (CR_it != CR );
+        while (CR_it != CR ); //step 10
 
-        for(size_t i = 0; i < stateVector.size(); ++i){
-            stateVector[i] == 0 ? Reachable = coFactorTrue(Reachable,current_states[i]) : Reachable = coFactorFalse(Reachable, current_states[i]);
+        // existential quantification. Step 11
+        reachable = CR;
+
+        for(size_t i = 0; i < current_states.size(); i++){
+            stateVector[i] ? reachable = coFactorTrue(reachable,current_states[i]) : reachable = coFactorFalse(reachable, current_states[i]);
         }    
-        return Reachable == 1;
+        return reachable;
     }
 
 
