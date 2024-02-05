@@ -28,12 +28,13 @@ using namespace ClassProject;
 
      /* Compute BDD for characteristic function of the initial state */
      fsm2->setInitState({false,false});
+    ASSERT_TRUE(fsm2->isReachable({false, false}));
+    ASSERT_FALSE(fsm2->isReachable({false, true}));
+    ASSERT_FALSE(fsm2->isReachable({true, false}));
+    ASSERT_TRUE(fsm2->isReachable({true, true}));
+
      int dist = fsm2->stateDistance({false,true});
      std::cout<<"Distance: "<<dist<<std::endl;
-//     ASSERT_TRUE(fsm2->isReachable({false, false}));
-//     ASSERT_FALSE(fsm2->isReachable({false, true}));
-//     ASSERT_FALSE(fsm2->isReachable({true, false}));
-//     ASSERT_TRUE(fsm2->isReachable({true, true}));
      ASSERT_TRUE(1);
  }
 
