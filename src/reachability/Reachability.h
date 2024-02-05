@@ -28,6 +28,7 @@ namespace ClassProject {
     std::vector<bool> initial_states;
     BDD_ID c_s;     //characteristic function of the initial state - c_s
 
+    BDD_ID compute_img(BDD_ID CR);
     };
 
 

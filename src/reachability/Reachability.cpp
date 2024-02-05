@@ -53,24 +53,9 @@ using namespace ClassProject;
         do
         {
             // step 6
-            CR = CR_it; 
-            // step 7
-            img = and2(CR, tau); 
-            for(auto & current_state : current_states)
-            {
-                img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state)); 
-            } 
-            
-            // step 8
-            for(int i = 0; i < current_states.size(); i++)
-            {
-                img = and2(img, xnor2(current_states[i],next_states[i]));
-            }
-
-            for(auto & next_state : next_states)
-            {
-                img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
-            }
+            CR = CR_it;
+            // step 7-8
+            img = compute_img(CR);
             
             // step 9
             CR_it = or2(CR, img);
@@ -164,6 +149,29 @@ using namespace ClassProject;
         }
     };
 
+    BDD_ID Reachability::compute_img(BDD_ID CR)
+    {
+        // step 7
+        BDD_ID img;
+        img = and2(CR, tau);
+        for(auto & current_state : current_states)
+        {
+            img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state));
+        }
+
+        // step 8
+        for(int i = 0; i < current_states.size(); i++)
+        {
+            img = and2(img, xnor2(current_states[i],next_states[i]));
+        }
+
+        for(auto & next_state : next_states)
+        {
+            img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
+        }
+        return img;
+    }
+
     int Reachability::stateDistance(const std::vector<bool> &stateVector) {
         BDD_ID CR_it = c_s; //c_r_it = c_s
         BDD_ID CR, img, reachable;
@@ -180,23 +188,9 @@ using namespace ClassProject;
             {
                 // step 6
                 CR = CR_it;
-                // step 7
-                img = and2(CR, tau);
-                for(auto & current_state : current_states)
-                {
-                    img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state));
-                }
 
-                // step 8
-                for(int i = 0; i < current_states.size(); i++)
-                {
-                    img = and2(img, xnor2(current_states[i],next_states[i]));
-                }
-
-                for(auto & next_state : next_states)
-                {
-                    img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
-                }
+                // step 7-8
+                img = compute_img(CR);
 
                 // step 9
                 CR_it = or2(CR, img);
