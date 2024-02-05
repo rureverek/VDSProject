@@ -32,10 +32,27 @@ using namespace ClassProject;
     ASSERT_FALSE(fsm2->isReachable({false, true}));
     ASSERT_FALSE(fsm2->isReachable({true, false}));
     ASSERT_TRUE(fsm2->isReachable({true, true}));
-
-     int dist = fsm2->stateDistance({false,true});
-     std::cout<<"Distance: "<<dist<<std::endl;
-     ASSERT_TRUE(1);
  }
+
+TEST_F(ReachabilityTest, StateDistanceExample) { /* NOLINT */
+
+    /* Create variables for current state and next state */
+    BDD_ID s0 = stateVars2.at(0);
+    BDD_ID s1 = stateVars2.at(1);
+
+    transitionFunctions.push_back(fsm2->neg(s1)); // s0' = not(s1)
+    transitionFunctions.push_back(s0); // s1' = s0
+
+    /* Compute BDD for transition function */
+    fsm2->setTransitionFunctions(transitionFunctions);
+
+    /* Compute BDD for characteristic function of the initial state */
+    fsm2->setInitState({false,false});
+
+    ASSERT_EQ(fsm2->stateDistance({false, false}), 0);
+    ASSERT_EQ(fsm2->stateDistance({true, false}), 1);
+    ASSERT_EQ(fsm2->stateDistance({true, true}), 2);
+    ASSERT_EQ(fsm2->stateDistance({false, true}), 3);
+}
 
 #endif
