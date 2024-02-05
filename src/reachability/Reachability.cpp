@@ -165,58 +165,51 @@ using namespace ClassProject;
     };
 
     int Reachability::stateDistance(const std::vector<bool> &stateVector) {
+        BDD_ID CR_it = c_s; //c_r_it = c_s
+        BDD_ID CR, img, reachable;
 
-        std::vector<BDD_ID> current_state = current_states;
-        BDD_ID c_r_it = c_s; //c_r_it = c_s
-        BDD_ID c_r;
-
-        /* Calculate characteristic function for state we are looking for */
-        BDD_ID looking = Manager::xnor2(current_states[0], stateVector[0]);
-        for (size_t i = 1; i < stateVector.size(); ++i)
-        {
-            looking = Manager::and2(looking, Manager::xnor2(current_states[i], stateVector[i]));
-        }
-        if(looking == c_s)return 0;
+        if(stateVector == initial_states)return 0; //Trivial case
         int cnt = 1;
         try
         {
-            if (stateVector.size() != current_state.size())
+            if (stateVector.size() != current_states.size())
             {
                 throw std::runtime_error("Size of stateVector does not match the number of state bits.");
             }
-
-            do {
-                BDD_ID temp1, temp2, img_;
-                /* cR(s) := cR_it(s); */
-                c_r = c_r_it;
-                /* imgR(s') := ∃x∃scR(s) ⋅τ(s, x, s'); */
-                img_ = Manager::and2(c_r, tau);
-                temp1 = True();
-                for(int i = 0; i < stateVector.size(); i++)
+            do
+            {
+                // step 6
+                CR = CR_it;
+                // step 7
+                img = and2(CR, tau);
+                for(auto & current_state : current_states)
                 {
-                    img_ = Manager::or2(Manager::coFactorTrue(img_, current_state[i]), Manager::coFactorFalse(img_, current_state[i]));
-                    temp1 = Manager::and2(Manager::xnor2(current_state[i], next_states[i]), temp1);
+                    img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state));
                 }
 
-                /* form imgR(s) by renaming of variables s'into s; */
-                
-                img_ = Manager::and2(temp1, img_);
-                for(int i = 0; i < stateVector.size(); i++)
+                // step 8
+                for(int i = 0; i < current_states.size(); i++)
                 {
-                    img_ = Manager::or2(Manager::coFactorTrue(img_, next_states[i]), Manager::coFactorFalse(img_, next_states[i]));
+                    img = and2(img, xnor2(current_states[i],next_states[i]));
                 }
-                std::cout << "Img = C_r + img_ ("<<c_r<<" + "<<img_<<")"<<std::endl;
-                /* cR_it(s) := cR(s) + imgR(s); */
-                c_r_it = Manager::or2(c_r, img_);
-                if(img_ == looking)
+
+                for(auto & next_state : next_states)
                 {
-                    return cnt;
+                    img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
                 }
+
+                // step 9
+                CR_it = or2(CR, img);
+
+                reachable = img;
+                for(size_t i = 0; i < current_states.size(); i++){
+                    stateVector[i] ? reachable = coFactorTrue(reachable,current_states[i]) : reachable = coFactorFalse(reachable, current_states[i]);
+                }
+                if (reachable)return cnt;
                 cnt++;
-            } while (c_r != c_r_it);
+            }
+            while (CR_it != CR ); //step 10
 
-            std::cout << "All reachable states: "<<c_r;
-            //visualizeBDD("./", c_r);
             return -1;
         }
         catch(std::exception const& e)
