@@ -28,6 +28,14 @@ using namespace ClassProject;
                     BDD_ID id = Manager::createVar(label); //Create next state variables
                     next_states.push_back(id);
                 }
+                for(size_t i = 0; i < inputSize; i++ ){
+                    std::string label = "input";
+                    label.append(std::to_string(i)); //Give inputs names: input0, input1, input2 ...
+                    label.append("'");
+                    BDD_ID id = Manager::createVar(label); //Create inputs
+                    inputs.push_back(id); 
+                }
+
             }
             catch(std::exception const& e)
             {
