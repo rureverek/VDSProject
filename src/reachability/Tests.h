@@ -55,4 +55,33 @@ TEST_F(ReachabilityTest, StateDistanceExample) { /* NOLINT */
     ASSERT_EQ(fsm2->stateDistance({false, true}), 3);
 }
 
+TEST_F(ReachabilityTest, ExceptionCheck) { /* NOLINT */
+
+    /* Create variables for current state and next state */
+    BDD_ID s0 = stateVars2.at(0);
+    BDD_ID s1 = stateVars2.at(1);
+
+    ASSERT_THROW(fsm2->setInitState({false}), std::runtime_error);
+
+    fsm2->setInitState({false,false});
+    transitionFunctions.push_back(fsm2->neg(s1)); // s0' = not(s1)
+
+    ASSERT_THROW(fsm2->setTransitionFunctions(transitionFunctions), std::runtime_error);
+
+    transitionFunctions.push_back(s0); // s1' = s0
+
+    /* Compute BDD for transition function */
+    fsm2->setTransitionFunctions(transitionFunctions);
+
+    ASSERT_THROW(fsm2->isReachable({false,false,false}), std::runtime_error);
+    ASSERT_THROW(fsm2->stateDistance({false}), std::runtime_error);
+}
+
+TEST(InitTest, ConstructorCheck) { /* NOLINT */
+
+     /* Call constructor with state_size = 0 */
+    ASSERT_THROW(std::unique_ptr<ClassProject::ReachabilityInterface> fsm2 = std::make_unique<ClassProject::Reachability>(0, 2), std::runtime_error);
+
+}
+
 #endif
