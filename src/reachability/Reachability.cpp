@@ -62,9 +62,21 @@ using namespace ClassProject;
         {
             // step 6
             CR = CR_it;
+
+            // step 7
+            img = and2(CR, tau);
+
             // step 7-8
-            img = compute_img(CR);
+            img = compute_img(compute_img(img, current_states),inputs);
+
+            // step 8
+            for(int i = 0; i < current_states.size(); i++)
+            {
+                img = and2(img, xnor2(current_states[i],next_states[i]));
+            }
             
+            img = compute_img(compute_img(img, next_states),inputs);
+
             // step 9
             CR_it = or2(CR, img);
         }
@@ -157,26 +169,16 @@ using namespace ClassProject;
         }
     };
 
-    BDD_ID Reachability::compute_img(BDD_ID CR)
+    BDD_ID Reachability::compute_img(BDD_ID CR, const std::vector<BDD_ID> &states )
     {
         // step 7
-        BDD_ID img;
-        img = and2(CR, tau);
-        for(auto & current_state : current_states)
+        BDD_ID img = CR;
+
+        for(auto & state : states)
         {
-            img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state));
+            img = or2(coFactorTrue(img,state),coFactorFalse(img,state));
         }
 
-        // step 8
-        for(int i = 0; i < current_states.size(); i++)
-        {
-            img = and2(img, xnor2(current_states[i],next_states[i]));
-        }
-
-        for(auto & next_state : next_states)
-        {
-            img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
-        }
         return img;
     }
 
@@ -197,8 +199,19 @@ using namespace ClassProject;
                 // step 6
                 CR = CR_it;
 
-                // step 7-8
-                img = compute_img(CR);
+                            // step 7
+            img = and2(CR, tau);
+
+            // step 7-8
+            img = compute_img(compute_img(img, current_states),inputs);
+
+            // step 8
+            for(int i = 0; i < current_states.size(); i++)
+            {
+                img = and2(img, xnor2(current_states[i],next_states[i]));
+            }
+            
+            img = compute_img(compute_img(img, next_states),inputs);
 
                 // step 9
                 CR_it = or2(CR, img);
