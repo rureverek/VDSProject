@@ -43,3 +43,6 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ./VDSProject_test
 
+    - name: TestReachability
+      working-directory: ${{github.workspace}}/build/src/reachability
+      run: ./VDSProject_reachability
