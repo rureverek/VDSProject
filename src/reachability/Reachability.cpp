@@ -53,10 +53,6 @@ using namespace ClassProject;
         auto reachable = stateDistance(stateVector);
 
         bool result;
-
-        reachable >= 0 ? result = true : result = false;
-
-        return result;
     
         reachable != -1 ? result = true : result = false;
 
