@@ -98,8 +98,10 @@ TEST(InitTest, InputExample) { /* NOLINT */
 
     /* Compute BDD for transition function */
     fsm2->setTransitionFunctions(transitionFunctions);
-
+    ASSERT_EQ(fsm2->stateDistance({false, false}), 0);
     ASSERT_EQ(fsm2->stateDistance({false, true}), 1);
+    ASSERT_EQ(fsm2->stateDistance({true, false}), 2);
+    ASSERT_EQ(fsm2->stateDistance({true, true}), 2);
 
 }
 
