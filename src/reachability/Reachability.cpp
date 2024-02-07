@@ -58,7 +58,7 @@ using namespace ClassProject;
 
         return result;
     
-        reachable >= 0 ? result = true : result = false;
+        reachable != -1 ? result = true : result = false;
 
         return result;
     }
