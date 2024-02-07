@@ -49,46 +49,18 @@ using namespace ClassProject;
         return inputs;
     }
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
-        
-        if( current_states.size() != stateVector.size() ){
-            throw std::runtime_error("isReachible: size does not match with number of state bits");
-        }
 
-        BDD_ID img, CR_it, CR, reachable;
-        // step 5
-        CR_it = c_s;
+        auto reachable = stateDistance(stateVector);
 
-        do
-        {
-            // step 6
-            CR = CR_it;
+        bool result;
 
-            // step 7
-            img = and2(CR, tau);
+        reachable >= 0 ? result = true : result = false;
 
-            // step 7-8
-            img = compute_img(compute_img(img, current_states),inputs);
+        return result;
+    
+        reachable >= 0 ? result = true : result = false;
 
-            // step 8
-            for(int i = 0; i < current_states.size(); i++)
-            {
-                img = and2(img, xnor2(current_states[i],next_states[i]));
-            }
-            
-            img = compute_img(compute_img(img, next_states),inputs);
-
-            // step 9
-            CR_it = or2(CR, img);
-        }
-        while (CR_it != CR ); //step 10
-
-        // existential quantification. Step 11
-        reachable = CR;
-
-        for(size_t i = 0; i < current_states.size(); i++){
-            stateVector[i] ? reachable = coFactorTrue(reachable,current_states[i]) : reachable = coFactorFalse(reachable, current_states[i]);
-        }    
-        return reachable;
+        return result;
     }
 
 
@@ -169,10 +141,9 @@ using namespace ClassProject;
         }
     };
 
-    BDD_ID Reachability::compute_img(BDD_ID CR, const std::vector<BDD_ID> &states )
+    BDD_ID Reachability::compute_img(BDD_ID img, const std::vector<BDD_ID> &states )
     {
         // step 7
-        BDD_ID img = CR;
 
         for(auto & state : states)
         {

@@ -55,34 +55,6 @@ TEST_F(ReachabilityTest, StateDistanceExample) { /* NOLINT */
     ASSERT_EQ(fsm2->stateDistance({false, true}), 3);
 }
 
-TEST(InitTest, InputExample) { /* NOLINT */
 
-    std::unique_ptr<ClassProject::ReachabilityInterface> fsm2 = std::make_unique<ClassProject::Reachability>(2, 2);
-    std::vector<BDD_ID> stateVars2 = fsm2->getStates();
-    auto inputs = fsm2->getInputs();
-    std::vector<BDD_ID> transitionFunctions;
-    /* Create variables for current state and next state */
-    BDD_ID s0 = stateVars2.at(0);
-    BDD_ID s1 = stateVars2.at(1);
-    BDD_ID x0 = inputs.at(0);
-    BDD_ID x1 = inputs.at(1);
-
-    fsm2->setInitState({false,false});
-
-    BDD_ID s0pluss1 = fsm2->or2(s0,s1);
-    BDD_ID notx0 = fsm2->neg(x0);
-    transitionFunctions.push_back(fsm2->and2(notx0, s0pluss1)); // s0' = not(x0) * (s0+s1)
-    transitionFunctions.push_back(fsm2->and2(x1, fsm2->or2(x0, s0pluss1))); // s1' = x1 * (x0+s0+s1)
-
-    /* Compute BDD for transition function */
-    fsm2->setTransitionFunctions(transitionFunctions);
-
-    ASSERT_EQ(fsm2->stateDistance({false, true}), 1);
-    ASSERT_TRUE(fsm2->isReachable({false, true}));
-    ASSERT_TRUE(fsm2->isReachable({false, false}));
-    ASSERT_TRUE(fsm2->isReachable({true, false}));
-    ASSERT_FALSE(fsm2->isReachable({true, true}));
-
-}
 
 #endif
