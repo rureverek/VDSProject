@@ -49,14 +49,7 @@ using namespace ClassProject;
         return inputs;
     }
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
-
-        auto reachable = stateDistance(stateVector);
-
-        bool result;
-    
-        reachable != -1 ? result = true : result = false;
-
-        return result;
+        return (stateDistance(stateVector) != -1);
     }
 
 
