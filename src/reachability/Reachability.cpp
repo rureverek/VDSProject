@@ -6,8 +6,6 @@ using namespace ClassProject;
 
     Reachability::Reachability(unsigned int stateSize, unsigned int inputSize) : ReachabilityInterface(stateSize,inputSize) {
 
-            try
-            {
                 if(stateSize == 0)
                 {
                     throw std::runtime_error("ReachabilityInterface(): stateSize = 0");
@@ -35,12 +33,6 @@ using namespace ClassProject;
                     BDD_ID id = Manager::createVar(label); //Create inputs
                     inputs.push_back(id); 
                 }
-
-            }
-            catch(std::exception const& e)
-            {
-                std::cout << "Exception: " << e.what() << "\n";
-            }
         }
     const std::vector<BDD_ID> &Reachability::getStates() const{
         return current_states;
@@ -70,8 +62,6 @@ using namespace ClassProject;
      */
     void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {
 
-        try
-        {
             if (transitionFunctions.size() != initial_states.size())
             {
                 throw std::runtime_error("The number of transition functions does not match the number of state bits");
@@ -86,11 +76,6 @@ using namespace ClassProject;
             {
                 tau = Manager::and2(tau, Manager::xnor2(delta[i], next_states[i]));
             }
-        }
-        catch(std::exception const& e)
-        {
-            std::cout << "Exception: " << e.what() << "\n";
-        }
     };
 
 
@@ -105,8 +90,6 @@ using namespace ClassProject;
     */
     void Reachability::setInitState(const std::vector<bool> &stateVector) {
 
-        try
-        {
             if (stateVector.size() != initial_states.size())
             {
                 throw std::runtime_error("Size of stateVector does not match the number of state bits.");
@@ -123,11 +106,6 @@ using namespace ClassProject;
             {
                 c_s = Manager::and2(c_s, Manager::xnor2(current_states[i], initial_states[i]));
             }
-        }
-        catch(std::exception const& e)
-        {
-            std::cout << "Exception: " << e.what() << "\n";
-        }
     };
 
     BDD_ID Reachability::compute_img(BDD_ID img, const std::vector<BDD_ID> &states )
@@ -148,8 +126,6 @@ using namespace ClassProject;
 
         if(stateVector == initial_states)return 0; //Trivial case
         int cnt = 1;
-        try
-        {
             if (stateVector.size() != current_states.size())
             {
                 throw std::runtime_error("Size of stateVector does not match the number of state bits.");
@@ -186,10 +162,4 @@ using namespace ClassProject;
             while (CR_it != CR ); //step 10
 
             return -1;
-        }
-        catch(std::exception const& e)
-        {
-            std::cout << "Exception: " << e.what() << "\n";
-        }
-        return 0;
     }
