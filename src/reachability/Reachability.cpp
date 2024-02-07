@@ -6,8 +6,6 @@ using namespace ClassProject;
 
     Reachability::Reachability(unsigned int stateSize, unsigned int inputSize) : ReachabilityInterface(stateSize,inputSize) {
 
-            try
-            {
                 if(stateSize == 0)
                 {
                     throw std::runtime_error("ReachabilityInterface(): stateSize = 0");
@@ -28,11 +26,13 @@ using namespace ClassProject;
                     BDD_ID id = Manager::createVar(label); //Create next state variables
                     next_states.push_back(id);
                 }
-            }
-            catch(std::exception const& e)
-            {
-                std::cout << "Exception: " << e.what() << "\n";
-            }
+                for(size_t i = 0; i < inputSize; i++ ){
+                    std::string label = "input";
+                    label.append(std::to_string(i)); //Give inputs names: input0, input1, input2 ...
+                    label.append("'");
+                    BDD_ID id = Manager::createVar(label); //Create inputs
+                    inputs.push_back(id); 
+                }
         }
     const std::vector<BDD_ID> &Reachability::getStates() const{
         return current_states;
@@ -41,34 +41,7 @@ using namespace ClassProject;
         return inputs;
     }
     bool Reachability::isReachable(const std::vector<bool> &stateVector) {
-        
-        if( current_states.size() != stateVector.size() ){
-            throw std::runtime_error("isReachible: size does not match with number of state bits");
-        }
-
-        BDD_ID img, CR_it, CR, reachable;
-        // step 5
-        CR_it = c_s;
-
-        do
-        {
-            // step 6
-            CR = CR_it;
-            // step 7-8
-            img = compute_img(CR);
-            
-            // step 9
-            CR_it = or2(CR, img);
-        }
-        while (CR_it != CR ); //step 10
-
-        // existential quantification. Step 11
-        reachable = CR;
-
-        for(size_t i = 0; i < current_states.size(); i++){
-            stateVector[i] ? reachable = coFactorTrue(reachable,current_states[i]) : reachable = coFactorFalse(reachable, current_states[i]);
-        }    
-        return reachable;
+        return (stateDistance(stateVector) != -1);
     }
 
 
@@ -89,8 +62,6 @@ using namespace ClassProject;
      */
     void Reachability::setTransitionFunctions(const std::vector<BDD_ID> &transitionFunctions) {
 
-        try
-        {
             if (transitionFunctions.size() != initial_states.size())
             {
                 throw std::runtime_error("The number of transition functions does not match the number of state bits");
@@ -105,11 +76,6 @@ using namespace ClassProject;
             {
                 tau = Manager::and2(tau, Manager::xnor2(delta[i], next_states[i]));
             }
-        }
-        catch(std::exception const& e)
-        {
-            std::cout << "Exception: " << e.what() << "\n";
-        }
     };
 
 
@@ -124,8 +90,6 @@ using namespace ClassProject;
     */
     void Reachability::setInitState(const std::vector<bool> &stateVector) {
 
-        try
-        {
             if (stateVector.size() != initial_states.size())
             {
                 throw std::runtime_error("Size of stateVector does not match the number of state bits.");
@@ -142,33 +106,17 @@ using namespace ClassProject;
             {
                 c_s = Manager::and2(c_s, Manager::xnor2(current_states[i], initial_states[i]));
             }
-        }
-        catch(std::exception const& e)
-        {
-            std::cout << "Exception: " << e.what() << "\n";
-        }
     };
 
-    BDD_ID Reachability::compute_img(BDD_ID CR)
+    BDD_ID Reachability::compute_img(BDD_ID img, const std::vector<BDD_ID> &states )
     {
         // step 7
-        BDD_ID img;
-        img = and2(CR, tau);
-        for(auto & current_state : current_states)
+
+        for(auto & state : states)
         {
-            img = or2(coFactorTrue(img,current_state),coFactorFalse(img,current_state));
+            img = or2(coFactorTrue(img,state),coFactorFalse(img,state));
         }
 
-        // step 8
-        for(int i = 0; i < current_states.size(); i++)
-        {
-            img = and2(img, xnor2(current_states[i],next_states[i]));
-        }
-
-        for(auto & next_state : next_states)
-        {
-            img = or2(coFactorTrue(img,next_state),coFactorFalse(img,next_state));
-        }
         return img;
     }
 
@@ -178,8 +126,6 @@ using namespace ClassProject;
 
         if(stateVector == initial_states)return 0; //Trivial case
         int cnt = 1;
-        try
-        {
             if (stateVector.size() != current_states.size())
             {
                 throw std::runtime_error("Size of stateVector does not match the number of state bits.");
@@ -189,8 +135,19 @@ using namespace ClassProject;
                 // step 6
                 CR = CR_it;
 
-                // step 7-8
-                img = compute_img(CR);
+                            // step 7
+            img = and2(CR, tau);
+
+            // step 7-8
+            img = compute_img(compute_img(img, current_states),inputs);
+
+            // step 8
+            for(int i = 0; i < current_states.size(); i++)
+            {
+                img = and2(img, xnor2(current_states[i],next_states[i]));
+            }
+            
+            img = compute_img(compute_img(img, next_states),inputs);
 
                 // step 9
                 CR_it = or2(CR, img);
@@ -205,10 +162,4 @@ using namespace ClassProject;
             while (CR_it != CR ); //step 10
 
             return -1;
-        }
-        catch(std::exception const& e)
-        {
-            std::cout << "Exception: " << e.what() << "\n";
-        }
-        return 0;
     }
