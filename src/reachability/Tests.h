@@ -57,6 +57,7 @@ TEST_F(ReachabilityTest, StateDistanceExample) { /* NOLINT */
 
 TEST_F(ReachabilityTest, ExceptionCheck) { /* NOLINT */
 
+
     /* Create variables for current state and next state */
     BDD_ID s0 = stateVars2.at(0);
     BDD_ID s1 = stateVars2.at(1);
@@ -66,7 +67,9 @@ TEST_F(ReachabilityTest, ExceptionCheck) { /* NOLINT */
     fsm2->setInitState({false,false});
     transitionFunctions.push_back(fsm2->neg(s1)); // s0' = not(s1)
 
+    ASSERT_THROW(fsm2->setTransitionFunctions({0, fsm2->uniqueTableSize()}), std::runtime_error);
     ASSERT_THROW(fsm2->setTransitionFunctions(transitionFunctions), std::runtime_error);
+
 
     transitionFunctions.push_back(s0); // s1' = s0
 

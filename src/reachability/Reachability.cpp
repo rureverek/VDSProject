@@ -14,17 +14,12 @@ using namespace ClassProject;
                 {
                     std::string label = "s";
                     label.append(std::to_string(i)); //Give label names: s0, s1, s2 ...
-                    BDD_ID id = Manager::createVar(label); //Create state variables
-                    current_states.push_back(id);
-                    initial_states.push_back(false); //Set initial state to false
-                }
-                for(int i = 0; i < stateSize; i++)
-                {
-                    std::string label = "s";
-                    label.append(std::to_string(i)); //Give label names: s0, s1, s2 ...
+                    BDD_ID s = Manager::createVar(label); //Create state variables
                     label.append("'");
-                    BDD_ID id = Manager::createVar(label); //Create next state variables
-                    next_states.push_back(id);
+                    BDD_ID next_s = Manager::createVar(label); //Create next state variables
+                    current_states.push_back(s);
+                    initial_states.push_back(false); //Set initial state to false
+                    next_states.push_back(next_s);
                 }
                 for(size_t i = 0; i < inputSize; i++ ){
                     std::string label = "input";
@@ -33,6 +28,8 @@ using namespace ClassProject;
                     BDD_ID id = Manager::createVar(label); //Create inputs
                     inputs.push_back(id); 
                 }
+                setInitState(initial_states);
+                setTransitionFunctions(current_states);
         }
     const std::vector<BDD_ID> &Reachability::getStates() const{
         return current_states;
@@ -66,6 +63,14 @@ using namespace ClassProject;
             {
                 throw std::runtime_error("The number of transition functions does not match the number of state bits");
             }
+            for(BDD_ID transitionFunction : transitionFunctions)
+            {
+                if(uniqueTableSize() <= transitionFunction)
+                {
+                    throw std::runtime_error("An unknown ID is provided");
+                }
+            }
+
             //Set transition function
             delta = transitionFunctions;
 
